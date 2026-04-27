@@ -1,0 +1,2761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Team Ping</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f0f0ee;--surface:#ffffff;
+  --border:rgba(0,0,0,.10);--border-md:rgba(0,0,0,.18);
+  --text:#18181a;--text-2:#52525b;--text-3:#a1a1aa;
+  --blue:#1d6fc4;--blue-bg:#dbeafe;--blue-t:#1e3a5f;
+  --green:#2d7d3a;--green-bg:#dcfce7;--green-t:#14532d;
+  --amber:#b45309;--amber-bg:#fef3c7;--amber-t:#451a03;
+  --coral:#c73e1d;--coral-bg:#fee2e2;--coral-t:#450a0a;
+  --purple:#6d28d9;--purple-bg:#ede9fe;--purple-t:#2e1065;
+  --teal:#0f766e;--teal-bg:#ccfbf1;--teal-t:#042f2e;
+  --r:14px;--rs:9px;--shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#111113;--surface:#1c1c1f;
+  --border:rgba(255,255,255,.08);--border-md:rgba(255,255,255,.15);
+  --text:#f4f4f5;--text-2:#a1a1aa;--text-3:#52525b;
+  --blue-bg:#1e3a5f;--blue-t:#93c5fd;
+  --green-bg:#14532d;--green-t:#86efac;
+  --amber-bg:#451a03;--amber-t:#fcd34d;
+  --coral-bg:#450a0a;--coral-t:#fca5a5;
+  --purple-bg:#2e1065;--purple-t:#c4b5fd;
+  --teal-bg:#042f2e;--teal-t:#99f6e4;
+}}
+
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;min-height:100vh;}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;}
+
+/* ── LOGIN SCREEN ── */
+#loginScreen{align-items:center;justify-content:center;padding:2rem 1rem;background:var(--bg);}
+.login-box{width:100%;max-width:380px;}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:2rem;}
+.login-logo-icon{width:44px;height:44px;background:var(--blue);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.login-logo-text{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-.5px;}
+.login-logo-sub{font-size:13px;color:var(--text-3);margin-top:1px;}
+.login-card{background:var(--surface);border-radius:20px;padding:2rem;box-shadow:var(--shadow);border:.5px solid var(--border);}
+.login-heading{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.login-sub{font-size:14px;color:var(--text-2);margin-bottom:1.5rem;}
+.field-label{font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.04em;}
+.field{width:100%;padding:11px 14px;font-size:15px;border:1.5px solid var(--border-md);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;transition:border-color .15s,box-shadow .15s;}
+.field:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,111,196,.15);}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 20px;}
+.role-card{padding:20px 12px 16px;border:2px solid var(--border-md);border-radius:14px;background:var(--bg);cursor:pointer;text-align:center;transition:all .18s;position:relative;}
+.role-card:hover{border-color:var(--blue);background:var(--blue-bg);}
+.role-card.active{border-color:var(--blue);background:var(--blue-bg);}
+.role-card.active::after{content:"✓";position:absolute;top:8px;right:10px;font-size:12px;font-weight:700;color:var(--blue);}
+.role-emoji{font-size:32px;margin-bottom:8px;}
+.role-name{font-size:15px;font-weight:700;color:var(--text);}
+.role-desc{font-size:12px;color:var(--text-2);margin-top:3px;line-height:1.4;}
+.join-btn{width:100%;padding:14px;font-size:16px;font-weight:700;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;transition:filter .15s,transform .1s;letter-spacing:.01em;}
+.join-btn:hover{filter:brightness(1.1);}
+.join-btn:active{transform:scale(.98);}
+
+/* ── ROLE CHOOSE SCREEN ── */
+#roleScreen{flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;}
+.role-choose-box{width:100%;max-width:480px;text-align:center;}
+.role-choose-title{font-size:26px;font-weight:700;margin-bottom:6px;}
+.role-choose-sub{font-size:15px;color:var(--text-2);margin-bottom:2rem;}
+.role-choose-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.role-big-card{padding:32px 20px;border:2px solid var(--border-md);border-radius:20px;background:var(--surface);cursor:pointer;text-align:center;transition:all .2s;box-shadow:var(--shadow);}
+.role-big-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.12);}
+.role-big-card.sender:hover,.role-big-card.sender:focus{border-color:var(--blue);background:var(--blue-bg);}
+.role-big-card.receiver:hover,.role-big-card.receiver:focus{border-color:var(--purple);background:var(--purple-bg);}
+.rbc-icon{font-size:48px;margin-bottom:12px;}
+.rbc-name{font-size:20px;font-weight:700;margin-bottom:6px;}
+.rbc-desc{font-size:13px;color:var(--text-2);line-height:1.5;}
+
+/* ── MAIN APP ── */
+#appScreen{flex-direction:column;}
+.app-shell{display:flex;flex-direction:column;min-height:100vh;}
+
+/* Top bar */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1rem;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;}
+.topbar-left{display:flex;align-items:center;gap:10px;}
+.topbar-logo{width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.topbar-name{font-size:15px;font-weight:700;color:var(--text);}
+.topbar-role{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;}
+.topbar-role.sender{background:var(--blue-bg);color:var(--blue-t);}
+.topbar-role.receiver{background:var(--purple-bg);color:var(--purple-t);}
+.topbar-right{display:flex;align-items:center;gap:6px;}
+.tb-btn{padding:6px 12px;font-size:12px;font-weight:600;border-radius:20px;cursor:pointer;border:1.5px solid var(--border-md);background:var(--bg);color:var(--text);font-family:inherit;transition:all .15s;white-space:nowrap;}
+.tb-btn:hover{border-color:var(--blue);color:var(--blue);}
+.tb-btn.online{background:var(--green-bg);color:var(--green-t);border-color:var(--green);}
+.tb-btn.offline{background:var(--coral-bg);color:var(--coral-t);border-color:var(--coral);}
+.tb-btn.muted{background:var(--amber-bg);color:var(--amber-t);border-color:var(--amber);}
+.tb-btn.danger:hover{border-color:var(--coral);color:var(--coral);}
+.conn-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3);}
+.conn-dot{width:7px;height:7px;border-radius:50%;background:var(--text-3);}
+.conn-dot.ok{background:var(--green);}
+
+
+/* Weather/day greeting */
+.greeting-bar{background:linear-gradient(135deg,var(--blue-bg),var(--surface));border-bottom:1px solid var(--border);padding:10px 1rem;}
+.greeting-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.greeting-main{font-size:15px;font-weight:800;color:var(--text);}
+.greeting-sub{font-size:12px;color:var(--text-2);margin-top:2px;line-height:1.35;}
+.greeting-weather{font-size:12px;font-weight:700;color:var(--blue-t);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 10px;white-space:nowrap;box-shadow:var(--shadow);}
+.greeting-refresh{border:none;background:transparent;color:var(--blue);cursor:pointer;font-size:13px;font-weight:800;margin-left:4px;}
+
+/* Peer bar */
+.peer-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 1rem;display:flex;align-items:center;gap:8px;overflow-x:auto;flex-wrap:nowrap;}
+.peer-chip{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid;white-space:nowrap;flex-shrink:0;}
+.peer-chip.online{background:var(--green-bg);color:var(--green-t);border-color:var(--green);}
+.peer-chip.away{background:var(--amber-bg);color:var(--amber-t);border-color:var(--amber);}
+.peer-chip.offline{background:var(--bg);color:var(--text-3);border-color:var(--border-md);}
+.pc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.peer-chip.online .pc-dot{background:var(--green);}
+.peer-chip.away .pc-dot{background:var(--amber);}
+.peer-chip.offline .pc-dot{background:var(--text-3);}
+.peer-empty{font-size:12px;color:var(--text-3);}
+
+/* Nav tabs */
+.nav-tabs{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 1rem;}
+.nav-tab{padding:12px 16px;font-size:13px;font-weight:600;color:var(--text-2);border:none;background:transparent;cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+
+
+
+/* In-app assistant bot */
+.bot-fab{position:fixed;right:18px;bottom:18px;width:56px;height:56px;border-radius:50%;background:var(--blue);color:#fff;border:none;box-shadow:0 12px 32px rgba(0,0,0,.25);font-size:24px;cursor:pointer;z-index:9700;display:flex;align-items:center;justify-content:center;transition:transform .18s,filter .18s;}
+.bot-fab:hover{transform:translateY(-3px) scale(1.04);filter:brightness(1.08);}
+.bot-panel{position:fixed;right:18px;bottom:84px;width:min(380px,calc(100vw - 36px));max-height:min(620px,calc(100vh - 110px));background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.30);z-index:9700;display:none;overflow:hidden;}
+.bot-panel.open{display:flex;flex-direction:column;}
+.bot-head{background:var(--blue);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;}
+.bot-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.20);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.bot-title{font-size:15px;font-weight:800;}
+.bot-sub{font-size:11px;opacity:.85;margin-top:1px;}
+.bot-close{margin-left:auto;background:transparent;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;}
+.bot-body{padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;min-height:260px;}
+.bot-msg{max-width:92%;padding:10px 12px;border-radius:16px;font-size:13px;line-height:1.45;}
+.bot-msg.bot{background:var(--bg);color:var(--text);align-self:flex-start;border-bottom-left-radius:5px;}
+.bot-msg.user{background:var(--blue);color:#fff;align-self:flex-end;border-bottom-right-radius:5px;}
+.bot-quick{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 10px;}
+.bot-chip{border:1.5px solid var(--border-md);background:var(--bg);color:var(--text-2);border-radius:20px;padding:7px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+.bot-chip:hover{border-color:var(--blue);color:var(--blue);}
+.bot-input-row{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border);background:var(--surface);}
+.bot-input{flex:1;border:1.5px solid var(--border-md);border-radius:20px;padding:10px 12px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;}
+.bot-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,111,196,.12);}
+.bot-send{background:var(--blue);color:#fff;border:none;border-radius:20px;padding:0 14px;font-weight:800;cursor:pointer;}
+.bot-highlight{outline:3px solid rgba(29,111,196,.35)!important;box-shadow:0 0 0 8px rgba(29,111,196,.12)!important;transition:outline .2s,box-shadow .2s;}
+
+/* Full interface interactivity */
+.topbar-logo,.login-logo-icon{transition:transform .18s,filter .18s;}
+.topbar-logo:hover,.login-logo-icon:hover{transform:rotate(-8deg) scale(1.08);filter:brightness(1.08);}
+.card{transition:transform .16s,box-shadow .16s,border-color .16s;}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.10);border-color:var(--border-md);}
+.nav-tab{position:relative;}
+.nav-tab::after{content:"";position:absolute;left:16px;right:16px;bottom:-2px;height:2px;background:var(--blue);transform:scaleX(0);transition:transform .18s;}
+.nav-tab:hover::after,.nav-tab.active::after{transform:scaleX(1);}
+.stat-box,.nest-box,.sum-stat,.avg-box{transition:transform .16s,box-shadow .16s,border-color .16s;cursor:pointer;}
+.stat-box:hover,.nest-box:hover,.sum-stat:hover,.avg-box:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 20px rgba(0,0,0,.10);border-color:var(--blue);}
+.interactive-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+.toolbar-input{flex:1;min-width:160px;padding:9px 12px;border:1.5px solid var(--border-md);border-radius:20px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;}
+.toolbar-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,111,196,.12);}
+.filter-chip{padding:7px 12px;border-radius:20px;border:1.5px solid var(--border-md);background:var(--bg);color:var(--text-2);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.filter-chip:hover,.filter-chip.active{background:var(--blue-bg);color:var(--blue-t);border-color:var(--blue);}
+.quick-panel{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.quick-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px 8px;text-align:center;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s;}
+.quick-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.10);border-color:var(--blue);}
+.quick-num{font-size:20px;font-weight:800;color:var(--blue);}
+.quick-lbl{font-size:10px;color:var(--text-3);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.04em;}
+.pulse-new{animation:pulseNew .8s ease;}
+@keyframes pulseNew{0%{transform:scale(.98);box-shadow:0 0 0 0 rgba(29,111,196,.35);}60%{transform:scale(1.01);box-shadow:0 0 0 8px rgba(29,111,196,0);}100%{transform:scale(1);}}
+
+/* Content */
+.content{flex:1;padding:1.25rem 1rem 3rem;max-width:640px;width:100%;margin:0 auto;}
+
+/* Notif banner */
+.notif{display:none;align-items:center;justify-content:space-between;background:var(--blue);color:#fff;border-radius:var(--r);padding:12px 16px;margin-bottom:1rem;font-size:14px;font-weight:600;box-shadow:var(--shadow);}
+.notif-x{cursor:pointer;font-size:18px;background:none;border:none;color:inherit;opacity:.8;line-height:1;}
+
+/* Cards */
+.card{background:var(--surface);border-radius:var(--r);padding:1.1rem 1.25rem;margin-bottom:1rem;border:1px solid var(--border);box-shadow:var(--shadow);}
+.card-title{font-size:12px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.9rem;}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;}
+.card-action{font-size:12px;color:var(--blue);background:none;border:none;cursor:pointer;font-family:inherit;font-weight:600;padding:0;}
+.card-action:hover{text-decoration:underline;}
+
+/* Buttons */
+.btn{font-family:inherit;cursor:pointer;border-radius:var(--rs);font-size:14px;font-weight:600;transition:filter .12s,transform .1s;padding:10px 18px;}
+.btn:active{transform:scale(.97);}
+.btn-blue{background:var(--blue);color:#fff;border:none;}
+.btn-blue:hover{filter:brightness(1.1);}
+.btn-outline{background:transparent;color:var(--text-2);border:1.5px solid var(--border-md);}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue);}
+.btn-green{background:var(--green-bg);color:var(--green-t);border:1.5px solid var(--green);}
+.btn-green:hover{filter:brightness(.95);}
+.btn-coral{background:var(--coral-bg);color:var(--coral-t);border:1.5px solid var(--coral);}
+.btn-sm{font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;}
+
+/* Form */
+.form-group{display:flex;flex-direction:column;gap:4px;flex:1;}
+.form-label{font-size:11px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.05em;}
+.form-row{display:flex;gap:10px;}
+.form-field{width:100%;padding:10px 12px;font-size:14px;border:1.5px solid var(--border-md);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;transition:border-color .15s;}
+.form-field:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,111,196,.12);}
+select.form-field{cursor:pointer;}
+
+/* Ping card */
+.ping-big{width:100%;padding:15px;font-size:16px;font-weight:700;background:var(--blue);color:#fff;border:none;border-radius:var(--r);cursor:pointer;transition:filter .15s,transform .1s;letter-spacing:.01em;margin-bottom:10px;}
+.ping-big:hover{filter:brightness(1.1);}
+.ping-big:active{transform:scale(.98);}
+.ping-big.sent{background:var(--green);}
+.ack-row{display:flex;gap:8px;}
+.ack-btn{flex:1;padding:9px 6px;font-size:13px;font-weight:600;border-radius:var(--rs);cursor:pointer;border:1.5px solid;font-family:inherit;transition:filter .12s;}
+.ack-btn.done{background:var(--green-bg);color:var(--green-t);border-color:var(--green);}
+.ack-btn.onit{background:var(--amber-bg);color:var(--amber-t);border-color:var(--amber);}
+.ack-btn.help{background:var(--coral-bg);color:var(--coral-t);border-color:var(--coral);}
+.ack-btn:hover{filter:brightness(.95);}
+.ping-targets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.ptcb{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:1.5px solid var(--border-md);background:var(--bg);cursor:pointer;user-select:none;font-size:13px;font-weight:500;color:var(--text-2);transition:all .15s;}
+.ptcb input[type=checkbox]{accent-color:var(--blue);width:13px;height:13px;cursor:pointer;flex-shrink:0;}
+.ptcb.chk{background:var(--blue-bg);color:var(--blue-t);border-color:var(--blue);font-weight:600;}
+.ptcb .cd{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.ptcb.st-online .cd{background:var(--green);}
+.ptcb.st-away .cd{background:var(--amber);}
+.psel-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+.psel-lbl{font-size:12px;color:var(--text-3);flex:1;}
+.psel-act{font-size:12px;color:var(--blue);background:none;border:none;cursor:pointer;font-family:inherit;font-weight:600;}
+
+/* Audit */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.stat-box{background:var(--bg);border-radius:var(--rs);padding:12px 8px;text-align:center;border:1px solid var(--border);}
+.stat-num{font-size:28px;font-weight:700;line-height:1;}
+.stat-lbl{font-size:11px;color:var(--text-3);margin-top:3px;font-weight:500;}
+.nest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.nest-box{background:var(--bg);border-radius:var(--rs);padding:8px 6px;text-align:center;border:1px solid var(--border);}
+.nest-num{font-size:18px;font-weight:700;color:var(--blue);}
+.nest-lbl{font-size:10px;color:var(--text-3);margin-top:2px;font-weight:600;}
+.avg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.avg-box{background:var(--purple-bg);border-radius:var(--rs);padding:10px 8px;text-align:center;border:1px solid rgba(109,40,217,.15);}
+.avg-num{font-size:20px;font-weight:700;color:var(--purple);}
+.avg-lbl{font-size:11px;color:var(--purple-t);opacity:.7;margin-top:2px;font-weight:500;}
+
+
+/* Interactive order card controls */
+.order-card{cursor:pointer;}
+.order-card.expanded{box-shadow:0 8px 24px rgba(0,0,0,.12);border-color:var(--blue);}
+.order-extra{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.order-card.expanded .order-extra{display:block;}
+.order-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.order-action-btn{padding:7px 12px;font-size:12px;font-weight:700;border:none;border-radius:20px;cursor:pointer;font-family:inherit;}
+.order-action-blue{background:var(--blue-bg);color:var(--blue-t);border:1px solid var(--blue);}
+.order-action-amber{background:var(--amber-bg);color:var(--amber-t);border:1px solid var(--amber);}
+.order-action-green{background:var(--green-bg);color:var(--green-t);border:1px solid var(--green);}
+.order-action-coral{background:var(--coral-bg);color:var(--coral-t);border:1px solid var(--coral);}
+.order-comment-row{display:flex;gap:8px;margin-top:8px;}
+.order-comment-row .order-notes{margin-top:0;flex:1;}
+.order-click-hint{font-size:10px;color:var(--text-3);font-weight:600;margin-left:auto;}
+
+/* Order cards */
+.order-card{border:1.5px solid var(--border-md);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;transition:box-shadow .15s;position:relative;}
+.order-card:last-child{margin-bottom:0;}
+.order-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.order-card.pr-Emergency{border-left:4px solid var(--coral);}
+.order-card.pr-Replenishment{border-left:4px solid var(--amber);}
+.order-card.pr-Scheduled{border-left:4px solid var(--blue);}
+.order-card.done{opacity:.55;filter:grayscale(.3);}
+.order-meta{font-size:11px;color:var(--text-3);margin-bottom:5px;font-weight:500;}
+.order-badges{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:5px;}
+.badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+.badge.Emergency{background:var(--coral-bg);color:var(--coral-t);}
+.badge.Replenishment{background:var(--amber-bg);color:var(--amber-t);}
+.badge.Scheduled{background:var(--blue-bg);color:var(--blue-t);}
+.badge.Medical{background:var(--purple-bg);color:var(--purple-t);}
+.badge.Vaccine{background:var(--teal-bg);color:var(--teal-t);}
+.nest-tag{font-size:11px;color:var(--text-3);font-weight:600;}
+.overdue-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;background:var(--coral-bg);color:var(--coral-t);border:1px solid var(--coral);margin-left:4px;}
+.order-id{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.order-link{font-size:12px;margin-top:4px;}
+.order-link a{color:var(--blue);text-decoration:none;word-break:break-all;font-weight:500;}
+.order-link a:hover{text-decoration:underline;}
+.order-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:6px;}
+.done-lbl{font-size:12px;color:var(--green-t);font-weight:600;}
+.mark-done-btn{padding:7px 16px;font-size:12px;font-weight:700;background:var(--green);color:#fff;border:none;border-radius:20px;cursor:pointer;transition:filter .15s;}
+.mark-done-btn:hover{filter:brightness(1.1);}
+.subby-lbl{font-size:11px;color:var(--text-3);font-weight:500;}
+.order-notes{width:100%;padding:7px 10px;font-size:12px;border:1.5px solid var(--border-md);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;margin-top:8px;resize:none;transition:border-color .15s;}
+.order-notes:focus{outline:none;border-color:var(--blue);}
+.orders-empty{font-size:14px;color:var(--text-3);text-align:center;padding:2rem 0;font-weight:500;}
+
+/* Mute control (sender only, targets receiver) */
+.mute-targets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.mute-chip{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:1.5px solid var(--border-md);background:var(--bg);cursor:pointer;font-size:13px;font-weight:600;color:var(--text-2);transition:all .15s;}
+.mute-chip.muted{background:var(--amber-bg);color:var(--amber-t);border-color:var(--amber);}
+.mute-chip:hover{border-color:var(--amber);color:var(--amber-t);}
+
+/* Feed */
+.feed{display:flex;flex-direction:column;gap:8px;}
+.feed-card{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r);border:1px solid;}
+.feed-card.pi{background:var(--blue-bg);border-color:rgba(29,111,196,.2);}
+.feed-card.po{background:var(--green-bg);border-color:rgba(45,125,58,.2);}
+.feed-card.tl{background:var(--purple-bg);border-color:rgba(109,40,217,.2);}
+.feed-card.ack{background:var(--amber-bg);border-color:rgba(180,83,9,.2);}
+.feed-card.mi,.feed-card.mo{background:var(--surface);border-color:var(--border);}
+.feed-card.lv{background:var(--bg);border-color:var(--border);opacity:.65;}
+.feed-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.feed-card.pi .feed-icon{background:var(--blue);color:#fff;}
+.feed-card.po .feed-icon{background:var(--green);color:#fff;}
+.feed-card.tl .feed-icon{background:var(--purple);color:#fff;}
+.feed-card.ack .feed-icon{background:var(--amber);color:#fff;}
+.feed-card.mi .feed-icon,.feed-card.mo .feed-icon{background:var(--bg);color:var(--text-3);border:1.5px solid var(--border-md);}
+.feed-card.lv .feed-icon{background:var(--bg);color:var(--text-3);border:1.5px solid var(--border-md);}
+.feed-body{flex:1;min-width:0;}
+.feed-text{font-size:14px;font-weight:600;line-height:1.4;}
+.feed-card.pi .feed-text{color:var(--blue-t);}
+.feed-card.po .feed-text{color:var(--green-t);}
+.feed-card.tl .feed-text{color:var(--purple-t);}
+.feed-card.ack .feed-text{color:var(--amber-t);}
+.feed-card.mi .feed-text,.feed-card.mo .feed-text,.feed-card.lv .feed-text{color:var(--text);}
+.feed-time{font-size:11px;color:var(--text-3);margin-top:3px;font-weight:500;}
+.feed-empty{font-size:14px;color:var(--text-3);text-align:center;padding:2rem 0;font-weight:500;}
+.feed-more{text-align:center;padding:10px;font-size:13px;font-weight:600;color:var(--blue);cursor:pointer;border-top:1px solid var(--border);margin-top:6px;}
+.feed-more:hover{text-decoration:underline;}
+
+/* Message */
+.msg-row{display:flex;gap:8px;}
+.msg-row .form-field{flex:1;}
+
+/* Sound settings */
+.sound-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+input[type=range]{width:90px;accent-color:var(--blue);}
+input[type=time]{accent-color:var(--blue);}
+
+/* Summary */
+.sum-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.sum-stat{background:var(--bg);border-radius:var(--rs);padding:12px 8px;text-align:center;border:1px solid var(--border);}
+.sum-num{font-size:24px;font-weight:700;}
+.sum-lbl{font-size:11px;color:var(--text-3);margin-top:3px;font-weight:500;}
+.section-title{font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px;}
+.sum-table{width:100%;border-collapse:collapse;font-size:12px;}
+.sum-table th{text-align:left;padding:9px 10px;background:var(--blue);color:#fff;font-weight:700;}
+.sum-table th:first-child{border-radius:var(--rs) 0 0 0;}
+.sum-table th:last-child{border-radius:0 var(--rs) 0 0;}
+.sum-table td{padding:9px 10px;border-bottom:1px solid var(--border);}
+.sum-table tr:last-child td{border-bottom:none;}
+.sum-table tr:nth-child(even) td{background:var(--bg);}
+.dl-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;margin-bottom:14px;transition:filter .15s;}
+.dl-btn:hover{filter:brightness(1.1);}
+.archive-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+
+/* Archive */
+.arch-item{border:1.5px solid var(--border-md);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;opacity:.6;}
+.arch-item:last-child{margin-bottom:0;}
+/* Flashcard form */
+.flashcard-wrap{position:relative;min-height:320px;}
+.flashcard{background:var(--surface);border-radius:20px;border:1.5px solid var(--border-md);overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08);}
+.fc-progress{height:4px;background:var(--bg);border-radius:0;}
+.fc-progress-bar{height:100%;background:var(--blue);border-radius:0;transition:width .4s cubic-bezier(.4,0,.2,1);}
+.fc-header{padding:18px 20px 0;display:flex;align-items:center;justify-content:space-between;}
+.fc-step-label{font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;}
+.fc-step-dots{display:flex;gap:5px;}
+.fc-dot{width:6px;height:6px;border-radius:50%;background:var(--border-md);transition:background .25s;}
+.fc-dot.active{background:var(--blue);}
+.fc-dot.done{background:var(--green);}
+.fc-body{padding:20px 20px 16px;}
+.fc-question{font-size:22px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.2;}
+.fc-hint{font-size:13px;color:var(--text-3);margin-bottom:16px;}
+.fc-options{display:grid;gap:8px;}
+.fc-option{padding:13px 16px;border:1.5px solid var(--border-md);border-radius:var(--rs);background:var(--bg);cursor:pointer;font-size:14px;font-weight:600;color:var(--text);text-align:left;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:10px;}
+.fc-option:hover{border-color:var(--blue);background:var(--blue-bg);color:var(--blue-t);}
+.fc-option.selected{border-color:var(--blue);background:var(--blue-bg);color:var(--blue-t);}
+.fc-option.Emergency.selected{border-color:var(--coral);background:var(--coral-bg);color:var(--coral-t);}
+.fc-option.Replenishment.selected{border-color:var(--amber);background:var(--amber-bg);color:var(--amber-t);}
+.fc-option.Medical.selected{border-color:var(--purple);background:var(--purple-bg);color:var(--purple-t);}
+.fc-option.Vaccine.selected{border-color:var(--teal);background:var(--teal-bg);color:var(--teal-t);}
+.fc-option-icon{font-size:18px;flex-shrink:0;}
+.fc-text-step{display:flex;flex-direction:column;gap:8px;}
+.fc-footer{padding:0 20px 18px;display:flex;align-items:center;justify-content:space-between;}
+.fc-back{padding:8px 16px;font-size:13px;font-weight:600;background:transparent;color:var(--text-2);border:1.5px solid var(--border-md);border-radius:20px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.fc-back:hover{border-color:var(--blue);color:var(--blue);}
+.fc-next{padding:10px 22px;font-size:14px;font-weight:700;background:var(--blue);color:#fff;border:none;border-radius:20px;cursor:pointer;font-family:inherit;transition:filter .15s,transform .1s;display:flex;align-items:center;gap:6px;}
+.fc-next:hover{filter:brightness(1.1);}
+.fc-next:active{transform:scale(.97);}
+.fc-next:disabled{opacity:.4;cursor:default;}
+.fc-summary{padding:16px 20px;background:var(--bg);border-top:1px solid var(--border);}
+.fc-summary-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;border-bottom:1px solid var(--border);}
+.fc-summary-row:last-child{border-bottom:none;}
+.fc-summary-lbl{color:var(--text-3);font-weight:600;}
+.fc-summary-val{color:var(--text);font-weight:700;}
+/* Xlsx file list */
+.xlsx-file{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:6px;background:var(--surface);}
+.xlsx-file-name{font-size:13px;font-weight:600;color:var(--text);}
+.xlsx-file-meta{font-size:11px;color:var(--text-3);margin-top:2px;}
+.xlsx-dl-btn{padding:6px 14px;font-size:12px;font-weight:700;background:var(--green);color:#fff;border:none;border-radius:20px;cursor:pointer;white-space:nowrap;}
+.xlsx-dl-btn:hover{filter:brightness(1.1);}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+/* Role switcher */
+.role-switcher{display:flex;background:var(--bg);border-radius:20px;padding:3px;gap:2px;border:1px solid var(--border-md);}
+.role-pill{padding:5px 14px;border-radius:18px;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .18s;color:var(--text-3);background:transparent;}
+.role-pill.active-sender{background:var(--blue);color:#fff;}
+.role-pill.active-receiver{background:var(--purple);color:#fff;}
+/* Reminder checklist */
+.reminder-check{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--border);margin-bottom:8px;}
+.reminder-check.done{background:var(--green-bg);border-color:var(--green);}
+.reminder-check.pending{background:var(--bg);border-color:var(--border-md);}
+.rcheck-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.reminder-check.done .rcheck-icon{background:var(--green);color:#fff;}
+.reminder-check.pending .rcheck-icon{background:var(--bg);color:var(--text-3);border:1.5px solid var(--border-md);}
+.rcheck-body{flex:1;}
+.rcheck-title{font-size:13px;font-weight:700;color:var(--text);}
+.rcheck-time{font-size:11px;color:var(--text-3);margin-top:2px;}
+
+.sum-countdown-live{font-size:12px;color:var(--blue-t);opacity:.9;font-weight:800;margin-top:4px;}
+.sum-countdown-warn{color:var(--amber-t);}
+.sum-countdown-danger{color:var(--coral-t);}
+
+/* Admin dashboard */
+.admin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.admin-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:12px 8px;text-align:center;}
+.admin-num{font-size:22px;font-weight:900;color:var(--blue);}
+.admin-lbl{font-size:10px;color:var(--text-3);font-weight:800;text-transform:uppercase;margin-top:3px;}
+.admin-user-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--border);background:var(--bg);border-radius:var(--rs);padding:10px 12px;margin-bottom:8px;}
+.admin-user-main{display:flex;align-items:center;gap:8px;min-width:0;}
+.admin-user-name{font-size:13px;font-weight:800;color:var(--text);}
+.admin-user-meta{font-size:11px;color:var(--text-3);margin-top:2px;}
+.admin-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
+.admin-action-log{max-height:220px;overflow:auto;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);}
+.admin-action-item{display:flex;justify-content:space-between;gap:8px;padding:9px 10px;border-bottom:1px solid var(--border);font-size:12px;}
+.admin-action-item:last-child{border-bottom:none;}
+.admin-action-text{font-weight:700;color:var(--text);}
+.admin-action-time{color:var(--text-3);white-space:nowrap;}
+@media(max-width:520px){.admin-grid{grid-template-columns:1fr 1fr;}.admin-user-row{align-items:flex-start;flex-direction:column;}.admin-actions{justify-content:flex-start;}}
+
+/* Summary date */
+.sum-date-banner{background:var(--blue-bg);border:1px solid rgba(29,111,196,.2);border-radius:var(--r);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.sum-date-text{font-size:15px;font-weight:700;color:var(--blue-t);}
+.sum-date-sub{font-size:12px;color:var(--blue-t);opacity:.7;margin-top:2px;}
+.sum-expires{font-size:11px;color:var(--blue-t);opacity:.6;font-weight:600;}
+/* Comment alert modal */
+.comment-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9000;padding:1rem;}
+.comment-modal-box{background:var(--surface);border-radius:20px;padding:1.5rem;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);border:1px solid var(--border);}
+.comment-modal-icon{font-size:36px;text-align:center;margin-bottom:10px;}
+.comment-modal-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;text-align:center;}
+.comment-modal-body{font-size:14px;color:var(--text-2);margin-bottom:8px;text-align:center;line-height:1.5;}
+.comment-modal-note{font-size:15px;font-weight:700;color:var(--text);background:var(--bg);border-radius:var(--rs);padding:10px 14px;margin-bottom:14px;border-left:4px solid var(--amber);}
+.comment-modal-btn{width:100%;padding:12px;font-size:15px;font-weight:700;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;}
+
+/* Message acknowledgement modal */
+.message-ack-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:9600;padding:1rem;}
+.message-ack-modal-box{background:var(--surface);border-radius:20px;padding:1.5rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);border:1px solid var(--border);}
+.message-ack-avatar{width:42px;height:42px;border-radius:50%;background:var(--blue);color:#fff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.message-ack-from{font-size:15px;font-weight:700;color:var(--text);}
+.message-ack-direct{font-size:11px;color:var(--text-3);margin-top:2px;}
+.message-ack-text{font-size:16px;color:var(--text);line-height:1.5;background:var(--bg);border-radius:var(--rs);padding:12px 14px;border-left:4px solid var(--blue);margin:14px 0;}
+.message-ack-btn{width:100%;padding:12px;font-size:15px;font-weight:700;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;}
+
+
+/* Sender order reviewed popup */
+.review-popup{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:9400;padding:1rem;}
+.review-popup-box{background:var(--surface);border-radius:20px;padding:1.5rem;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);border:1px solid var(--border);}
+.review-popup-icon{font-size:38px;text-align:center;margin-bottom:10px;}
+.review-popup-title{font-size:19px;font-weight:800;color:var(--text);text-align:center;margin-bottom:6px;}
+.review-popup-body{font-size:14px;color:var(--text-2);line-height:1.5;text-align:center;margin-bottom:14px;}
+.review-popup-card{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px;font-size:13px;color:var(--text);}
+.review-popup-btn{width:100%;padding:12px;font-size:15px;font-weight:800;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;}
+
+/* Accept order modal */
+.accept-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:8500;padding:1rem;}
+.accept-modal-box{background:var(--surface);border-radius:20px;padding:1.5rem;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);border:1px solid var(--border);}
+.accept-order-id{font-size:22px;font-weight:700;color:var(--text);margin:8px 0 4px;}
+.accept-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.accept-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+/* Recipient step in flashcard */
+.fc-recipient-list{display:flex;flex-direction:column;gap:8px;}
+.fc-recipient-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid var(--border-md);border-radius:var(--rs);background:var(--bg);cursor:pointer;transition:all .15s;}
+.fc-recipient-item:hover{border-color:var(--blue);background:var(--blue-bg);}
+.fc-recipient-item.selected{border-color:var(--blue);background:var(--blue-bg);}
+.fc-recipient-avatar{width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fc-recipient-name{font-size:15px;font-weight:700;color:var(--text);}
+.fc-recipient-role{font-size:11px;color:var(--text-3);}
+/* Receiver audit card shows nest + by me + pending */
+.receiver-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ SCREEN 1 — LOGIN ══════════════ -->
+<div class="screen active" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">&#x1F514;</div>
+      <div>
+        <div class="login-logo-text">Team Ping</div>
+        <div class="login-logo-sub">Vaccine &amp; medical order tracking</div>
+      </div>
+    </div>
+    <div class="login-card">
+      <div class="login-heading">Welcome back</div>
+      <div class="login-sub">Enter your name to continue</div>
+      <label class="field-label">Your name</label>
+      <input class="field" type="text" id="nameInput" placeholder="e.g. Kwame Darko" maxlength="24" style="margin-bottom:20px;"/>
+      <button class="join-btn" onclick="goToRoleSelect()">Continue &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN 2 — ROLE SELECT ══════════════ -->
+<div class="screen" id="roleScreen">
+  <div class="role-choose-box">
+    <div style="font-size:32px;margin-bottom:12px;">👋</div>
+    <div class="role-choose-title">Hi <span id="roleGreetName"></span>!</div>
+    <div class="role-choose-sub">How will you be joining today?</div>
+    <div class="role-choose-grid">
+      <div class="role-big-card sender" onclick="selectRole('sender')">
+        <div class="rbc-icon">📤</div>
+        <div class="rbc-name" style="color:var(--blue-t);">Sender</div>
+        <div class="rbc-desc">Submit vaccine &amp; medical orders, track progress, manage the team</div>
+      </div>
+      <div class="role-big-card receiver" onclick="selectRole('receiver')">
+        <div class="rbc-icon">📥</div>
+        <div class="rbc-name" style="color:var(--purple-t);">Receiver</div>
+        <div class="rbc-desc">Action and complete incoming orders from your team</div>
+      </div>
+    </div>
+    <button class="btn btn-outline btn-sm" style="margin-top:20px;" onclick="goBack()">← Change name</button>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN 3 — APP ══════════════ -->
+<div class="screen" id="appScreen">
+<div class="app-shell">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">&#x1F514;</div>
+      <div>
+        <div class="topbar-name" id="topName"></div>
+        <div class="topbar-role" id="topRole"></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="conn-badge"><span class="conn-dot" id="connDot"></span><span id="connLbl">Connecting</span></div>
+      <button class="tb-btn online" id="liveBtn" onclick="toggleLive()">&#x25CF; Online</button>
+      <button class="tb-btn" onclick="refreshTeamConnection()">Refresh team</button>
+      <button class="tb-btn danger" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+
+  <!-- Greeting bar -->
+  <div class="greeting-bar" id="greetingBar">
+    <div class="greeting-inner">
+      <div>
+        <div class="greeting-main" id="greetingMain">Welcome to Team Ping</div>
+        <div class="greeting-sub" id="greetingSub">Loading your day and weather...</div>
+      </div>
+      <div class="greeting-weather" id="greetingWeather">☁️ Weather</div>
+    </div>
+  </div>
+
+  <!-- Peer bar -->
+  <div class="peer-bar" id="peerBar">
+    <span class="peer-empty">Waiting for teammates... Open the same server link on another device/browser.</span>
+  </div>
+
+  <!-- Nav tabs -->
+  <div class="nav-tabs" style="overflow-x:auto;flex-wrap:nowrap;display:flex;">
+    <button class="nav-tab active" id="ntab-main" onclick="switchTab('main')">Main</button>
+    <button class="nav-tab" id="ntab-activity" onclick="switchTab('activity')">Activity</button>
+    <button class="nav-tab" id="ntab-summary" onclick="switchTab('summary')">Summary</button>
+    <button class="nav-tab" id="ntab-archive" onclick="switchTab('archive')">Report</button>
+    <button class="nav-tab" id="ntab-admin" onclick="switchTab('admin')">Admin</button>
+    <button class="nav-tab" id="ntab-settings" onclick="switchTab('settings')">Settings</button>
+  </div>
+
+  <!-- Notif banner -->
+  <div style="padding:0 1rem;"><div class="notif" id="notifBanner"><span id="notifText"></span><button class="notif-x" onclick="dismissBanner()">&#x2715;</button></div></div>
+
+  <!-- ════ MAIN TAB ════ -->
+  <div class="content" id="tabMain">
+
+    <!-- Audit counter (sender only) -->
+    <div class="card" id="auditCard">
+      <div class="card-header">
+        <div class="card-title" style="margin:0;">Today's audit</div>
+        <button class="card-action" onclick="resetDay()">Reset day</button>
+      </div>
+      <!-- Sender sees 3 boxes + avg time -->
+      <div class="stat-grid" id="senderAuditRow" style="grid-template-columns:repeat(4,1fr);">
+        <div class="stat-box"><div class="stat-num" id="auditTotal" style="color:var(--blue)">0</div><div class="stat-lbl">Total completed</div></div>
+        <div class="stat-box"><div class="stat-num" id="auditByMe" style="color:var(--green)">0</div><div class="stat-lbl">Completed by me</div></div>
+        <div class="stat-box"><div class="stat-num" id="auditPending" style="color:var(--amber)">0</div><div class="stat-lbl">Pending</div></div>
+        <div class="stat-box"><div class="stat-num" id="avgTimeAll" style="color:var(--purple)">—</div><div class="stat-lbl">Avg resolve time</div></div>
+      </div>
+      <!-- Receiver sees nest grid + by me + pending -->
+      <div id="receiverAuditSection" style="display:none;">
+        <div class="card-title" style="margin-bottom:8px;">By nest</div>
+        <div class="nest-grid" id="nestGrid"></div>
+        <div class="receiver-stat-row" style="grid-template-columns:1fr 1fr 1fr;">
+          <div class="stat-box"><div class="stat-num" id="auditByMeR" style="color:var(--green)">0</div><div class="stat-lbl">Completed by me</div></div>
+          <div class="stat-box"><div class="stat-num" id="auditPendingR" style="color:var(--amber)">0</div><div class="stat-lbl">Still pending</div></div>
+          <div class="stat-box"><div class="stat-num" id="avgTimeR" style="color:var(--purple)">—</div><div class="stat-lbl">Avg resolve time</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order form (sender only) — interactive flashcard -->
+    <div class="card" id="senderOrderForm">
+      <div class="card-header">
+        <div class="card-title" style="margin:0;">New order</div>
+        <button class="card-action" onclick="fcReset()" id="fcResetBtn" style="display:none;">Start over</button>
+      </div>
+      <div class="flashcard-wrap">
+        <div class="flashcard" id="flashcard">
+          <div class="fc-progress"><div class="fc-progress-bar" id="fcBar" style="width:0%"></div></div>
+          <div class="fc-header">
+            <span class="fc-step-label" id="fcStepLabel">Step 1 of 5</span>
+            <div class="fc-step-dots" id="fcDots"></div>
+          </div>
+          <div class="fc-body" id="fcBody"></div>
+          <div class="fc-summary" id="fcSummary" style="display:none;"></div>
+          <div class="fc-footer">
+            <button class="fc-back" id="fcBackBtn" onclick="fcBack()" style="display:none;">← Back</button>
+            <div></div>
+            <button class="fc-next" id="fcNextBtn" onclick="fcNext()" disabled>Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ping (under new order) -->
+    <div class="card">
+      <div class="card-title">Ping your team</div>
+      <div class="psel-row">
+        <span class="psel-lbl" id="pselLbl">Select who to ping</span>
+        <button class="psel-act" onclick="selAll(true)">All</button>
+        <button class="psel-act" onclick="selAll(false)" style="margin-left:6px;">None</button>
+      </div>
+      <div class="ping-targets" id="pingTargets"><span style="font-size:13px;color:var(--text-3);">Waiting for teammates... Open the same server link on another device/browser.</span></div>
+      <button class="ping-big" id="pingBtn" onclick="sendPing()">&#x1F514; Send Ping</button>
+      <div class="ack-row">
+        <button class="ack-btn done" onclick="sendAck('done')">&#x2713; Done</button>
+        <button class="ack-btn onit" onclick="sendAck('on-it')">&#x23F3; On it</button>
+        <button class="ack-btn help" onclick="sendAck('need-help')">&#x26A0; Need help</button>
+      </div>
+    </div>
+
+    <!-- Orders list -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" style="margin:0;" id="ordersListLabel">Orders</div>
+        <button class="card-action btn-coral btn-sm btn" id="clearDoneBtn" onclick="clearDoneOrders()" style="display:none;">Clear completed</button>
+      </div>
+      <div class="quick-panel" id="quickPanel">
+        <div class="quick-card" onclick="setOrderFilter('all')"><div class="quick-num" id="qAll">0</div><div class="quick-lbl">All</div></div>
+        <div class="quick-card" onclick="setOrderFilter('pending')"><div class="quick-num" id="qPending">0</div><div class="quick-lbl">Pending</div></div>
+        <div class="quick-card" onclick="setOrderFilter('done')"><div class="quick-num" id="qDone">0</div><div class="quick-lbl">Done</div></div>
+      </div>
+      <div class="interactive-toolbar">
+        <input class="toolbar-input" id="orderSearch" placeholder="Search order, nest, sender..." oninput="applyOrderFilters()"/>
+        <button class="filter-chip active" id="f-all" onclick="setOrderFilter('all')">All</button>
+        <button class="filter-chip" id="f-pending" onclick="setOrderFilter('pending')">Pending</button>
+        <button class="filter-chip" id="f-done" onclick="setOrderFilter('done')">Done</button>
+        <button class="filter-chip" id="f-emergency" onclick="setOrderFilter('Emergency')">Emergency</button>
+      </div>
+      <div id="tasksList"><div class="orders-empty">No orders yet</div></div>
+    </div>
+
+    <!-- Message -->
+    <div class="card">
+      <div class="card-title">Send a message</div>
+      <div class="msg-row" style="flex-direction:column;gap:8px;">
+        <input class="form-field" type="text" id="msgInput" placeholder="Type a message..." maxlength="140"
+          onkeydown="if(event.key==='Enter')showMsgOptions()"/>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="quickFillMsg('Please acknowledge this')" style="flex:1;">Need ack</button>
+          <button class="btn btn-outline btn-sm" onclick="quickFillMsg('Please check this order')" style="flex:1;">Check order</button>
+          <button class="btn btn-outline btn-sm" onclick="showMsgOptions()" style="flex:1;">Send &#x25BE;</button>
+        </div>
+        <div id="msgOptionsRow" style="display:none;gap:8px;flex-direction:column;">
+          <div style="font-size:12px;color:var(--text-3);font-weight:600;">Send to:</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;" id="msgRecipientBtns"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end tabMain -->
+
+  <!-- ════ SUMMARY TAB ════ -->
+  <div class="content" id="tabSummary" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" style="margin:0;">Daily summary</div>
+        <div style="display:flex;gap:8px;">
+          <button class="card-action" onclick="clearAndRefresh()">&#x21BB; Refresh</button>
+          <button class="card-action" style="color:var(--coral-t);" onclick="clearSummaryData()">Clear</button>
+        </div>
+      </div>
+      <div class="sum-date-banner">
+        <div>
+          <div class="sum-date-text" id="sumDateText"></div>
+          <div class="sum-date-sub" id="sumDateSub"></div>
+          <div class="sum-countdown-live" id="sumCountdownLive"></div>
+        </div>
+        <div class="sum-expires" id="sumExpires"></div>
+      </div>
+      <button class="dl-btn" onclick="downloadCSV()">&#x1F4E5; Download as CSV</button>
+      <div class="section-title">Audit reminders</div>
+      <div id="reminderChecklist"></div>
+      <div class="sum-stat-grid" id="sumStats"></div>
+      <div class="section-title">By priority</div>
+      <div style="overflow-x:auto;" id="sumByPriority"></div>
+      <div class="section-title">By nest</div>
+      <div style="overflow-x:auto;" id="sumByNest"></div>
+      <div class="section-title">All orders</div>
+      <div style="overflow-x:auto;">
+        <table class="sum-table"><thead><tr>
+          <th>Order ID</th><th>Nest</th><th>Priority</th><th>Type</th>
+          <th>By</th><th>Time</th><th>Status</th><th>Completed by</th><th>Took</th>
+        </tr></thead><tbody id="sumTableBody"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ REPORT TAB ════ -->
+  <div class="content" id="tabArchive" style="display:none;">
+
+    <!-- XLSX Reports -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" style="margin:0;">&#x1F4CA; Reports</div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="card-action" onclick="testReportSettings()" title="Test report settings">🧪 Test</button>
+          <button class="card-action" onclick="saveDailyXlsx()">&#x1F4BE; Save today</button>
+        </div>
+      </div>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:12px;">After the daily summary refreshes, it goes straight into an Excel report. After the last day of each month, all daily Excel files are combined into one monthly reference file. Use Test to confirm the report settings.</p>
+      <div class="section-title">Summary preview</div>
+      <div style="overflow-x:auto;" id="reportDailySummaries"><div class="orders-empty" style="padding:1rem 0;">Loading summaries...</div></div>
+      <div class="section-title">Reports Excel files</div>
+      <div id="xlsxList"><div class="orders-empty" style="padding:1rem 0;">Loading reports...</div></div>
+    </div>
+
+  </div>
+
+  <!-- ════ ACTIVITY TAB ════ -->
+  <div class="content" id="tabActivity" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" style="margin:0;">&#x1F4F1; Activity feed</div>
+        <button class="card-action" onclick="clearLog()">Clear</button>
+      </div>
+      <div class="feed" id="feedLog"><div class="feed-empty">No activity yet</div></div>
+      <div class="feed-more" id="feedMore" style="display:none;" onclick="toggleFeed()">&#x25BC; Show more</div>
+    </div>
+  </div>
+
+  <!-- ════ ADMIN TAB ════ -->
+  <div class="content" id="tabAdmin" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" style="margin:0;">Admin dashboard</div>
+        <button class="card-action" onclick="loadAdminDashboard()">Refresh</button>
+      </div>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:12px;">Shows only people who are truly online now. Offline, leave, remove, and mute actions are recorded below with the time.</p>
+      <div class="admin-grid" id="adminStats"><div class="admin-box"><div class="admin-num">—</div><div class="admin-lbl">Loading</div></div></div>
+      <div class="section-title">Online users now</div>
+      <div id="adminUsers"><div class="orders-empty" style="padding:1rem 0;">Loading users...</div></div>
+      <div class="section-title">Connection / admin actions with time</div>
+      <div id="adminActionLog"><div class="orders-empty" style="padding:1rem 0;">No actions yet</div></div>
+      <div class="section-title">Recent summaries</div>
+      <div style="overflow-x:auto;" id="adminSummaries"><div class="orders-empty" style="padding:1rem 0;">Loading summaries...</div></div>
+    </div>
+  </div>
+
+  <!-- ════ SETTINGS TAB ════ -->
+  <div class="content" id="tabSettings" style="display:none;">
+    <!-- Sound settings -->
+    <div class="card">
+      <div class="card-title">&#x1F50A; Sound settings</div>
+      <div class="sound-row" style="margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+        <span style="font-size:13px;font-weight:600;color:var(--text-2);">Alert sound</span>
+        <select class="form-field" id="soundSelect" onchange="previewSound()" style="width:auto;flex:none;">
+          <option value="ding">Ding</option><option value="chime">Chime</option>
+          <option value="blip">Blip</option><option value="alert">Alert</option><option value="pop">Pop</option>
+        </select>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);">
+          <span>Volume</span>
+          <input type="range" min="0" max="1" step="0.1" value="0.7" id="volSlider" oninput="document.getElementById('volOut').textContent=Math.round(this.value*100)+'%'"/>
+          <span id="volOut">70%</span>
+        </div>
+      </div>
+    </div>
+    <!-- Reminder settings -->
+    <div class="card">
+      <div class="card-title">&#x23F0; Reminder settings</div>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:12px;">Set a daily time to remind everyone connected to the sheet. A pop-up will stay on each screen until they complete it.</p>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
+        <span style="font-size:13px;font-weight:600;color:var(--text-2);">Reminder time</span>
+        <input type="time" class="form-field" id="reminderTime" style="width:auto;flex:1;"/>
+        <button class="btn btn-blue btn-sm" onclick="setReminder()">Set</button>
+        <button class="btn btn-outline btn-sm" onclick="clearReminder()">Clear</button>
+      </div>
+      <div id="reminderStatus" style="font-size:13px;color:var(--green-t);font-weight:600;"></div>
+    </div>
+    <!-- Mute control -->
+    <div class="card" id="muteCardSettings">
+      <div class="card-title">&#x1F507; Mute receivers</div>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:10px;">Click a receiver to mute or unmute their alerts.</p>
+      <div class="mute-targets" id="muteTargetsSettings"><span style="font-size:13px;color:var(--text-3);">No receivers online</span></div>
+    </div>
+    <!-- Account info -->
+    <div class="card">
+      <div class="card-title">&#x1F464; Account</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div><div style="font-size:14px;font-weight:700;" id="settingsName"></div><div style="font-size:12px;color:var(--text-3);" id="settingsRole"></div></div>
+      </div>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+        <div class="role-switcher" style="align-self:flex-start;">
+          <button class="role-pill" id="rpSender" onclick="switchRole('sender')">&#x1F4E4; Sender</button>
+          <button class="role-pill" id="rpReceiver" onclick="switchRole('receiver')">&#x1F4E5; Receiver</button>
+        </div>
+        <button class="btn btn-coral btn-sm" style="align-self:flex-start;margin-top:4px;" onclick="logout()">Sign out</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end app-shell -->
+</div><!-- end appScreen -->
+
+<!-- ══ MESSAGE POPUP MODAL ══ -->
+<div id="msgPopupModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:9500;padding:1rem;padding-bottom:2rem;">
+  <div style="background:var(--surface);border-radius:20px;padding:1.25rem 1.5rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);border:1px solid var(--border);animation:slideUp .25s ease;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="msgPopupAvatar"></div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);" id="msgPopupFrom"></div>
+        <div style="font-size:11px;color:var(--text-3);" id="msgPopupDirect"></div>
+      </div>
+      <button onclick="document.getElementById('msgPopupModal').style.display='none'" style="margin-left:auto;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-3);line-height:1;">×</button>
+    </div>
+    <div style="font-size:16px;color:var(--text);line-height:1.5;background:var(--bg);border-radius:var(--rs);padding:12px 14px;border-left:4px solid var(--blue);margin-bottom:12px;" id="msgPopupText"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-blue btn-sm" style="flex:1;" onclick="replyToSender()">Reply</button>
+      <button class="btn btn-outline btn-sm" style="flex:1;" onclick="document.getElementById('msgPopupModal').style.display='none'">Dismiss</button>
+    </div>
+  </div>
+
+</div>
+<style>@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}</style>
+
+<!-- ══ MESSAGE ACKNOWLEDGEMENT MODAL ══ -->
+<div class="message-ack-modal" id="messageAckModal">
+  <div class="message-ack-modal-box">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="message-ack-avatar" id="messageAckAvatar"></div>
+      <div>
+        <div class="message-ack-from" id="messageAckFrom"></div>
+        <div class="message-ack-direct" id="messageAckDirect"></div>
+      </div>
+    </div>
+    <div class="message-ack-text" id="messageAckText"></div>
+    <button class="message-ack-btn" onclick="acknowledgeMessage()">✓ Acknowledge message</button>
+  </div>
+</div>
+
+
+
+<!-- ══ SENDER ORDER REVIEWED POPUP ══ -->
+<div class="review-popup" id="reviewPopup">
+  <div class="review-popup-box">
+    <div class="review-popup-icon">👀</div>
+    <div class="review-popup-title">Order reviewed</div>
+    <div class="review-popup-body" id="reviewPopupBody">Your order has been reviewed.</div>
+    <div class="review-popup-card" id="reviewPopupCard"></div>
+    <button class="review-popup-btn" onclick="dismissReviewPopup()">Got it</button>
+  </div>
+</div>
+
+<!-- ══ ACCEPT ORDER MODAL ══ -->
+<div class="accept-modal" id="acceptModal" style="display:none;">
+  <div class="accept-modal-box">
+    <div style="font-size:36px;text-align:center;margin-bottom:10px;">📬</div>
+    <div style="font-size:13px;font-weight:600;color:var(--text-3);text-align:center;margin-bottom:4px;">New order assigned to you</div>
+    <div class="accept-order-id" id="acceptOrderId" style="text-align:center;"></div>
+    <div class="accept-badges" id="acceptBadges" style="justify-content:center;"></div>
+    <div style="font-size:13px;color:var(--text-2);text-align:center;margin-bottom:4px;">From: <strong id="acceptFrom"></strong></div>
+    <div style="font-size:13px;color:var(--text-2);text-align:center;margin-bottom:14px;">Nest: <strong id="acceptNest"></strong></div>
+    <div class="accept-btn-row">
+      <button class="btn btn-outline" onclick="declineOrder()" style="padding:12px;">Not now</button>
+      <button class="btn btn-blue" onclick="acceptOrder()" style="padding:12px;font-size:15px;font-weight:700;">✓ Accept &amp; Work on it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COMMENT ALERT MODAL ══ -->
+<div class="comment-modal" id="commentModal" style="display:none;">
+  <div class="comment-modal-box">
+    <div class="comment-modal-icon">💬</div>
+    <div class="comment-modal-title">New comment on your order</div>
+    <div class="comment-modal-body">A note has been added that requires your attention:</div>
+    <div class="comment-modal-note" id="commentModalText"></div>
+    <div style="font-size:12px;color:var(--text-3);margin-bottom:14px;text-align:center;">From: <strong id="commentModalFrom"></strong></div>
+    <button class="comment-modal-btn" onclick="acknowledgeComment()">Got it — acknowledged</button>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────────
+let myName="",myRole="",myStatus="online";
+let ws=null,audioCtx=null,isMuted=false;
+let tasks={},peers={},mutedPeers={};
+let auditTotal=0,auditByMe=0;
+const NESTS=["GH-1","GH-2","GH-3","GH-4","GH-5","GH-6"];
+let nestCounts={};NESTS.forEach(n=>nestCounts[n]=0);
+let feedItems=[],feedExpanded=false;
+let reminderInterval=null;
+let shouldReconnect=true;
+let midnightResetTimer=null;
+let summaryCountdownTimer=null;
+let pendingMessageAck=null;
+let lastReminderFireMinute="";
+let currentOrderFilter="all";
+
+// ── Screens ────────────────────────────────────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goToRoleSelect(){
+  const v=document.getElementById("nameInput").value.trim();
+  if(!v){alert("Please enter your name.");return;}
+  myName=v;
+  document.getElementById("roleGreetName").textContent=v;
+  showScreen("roleScreen");
+}
+
+function goBack(){showScreen("loginScreen");}
+
+function selectRole(role){
+  myRole=role;
+  try{localStorage.setItem("tp_name",myName);localStorage.setItem("tp_role",myRole);}catch(e){}
+  launchApp();
+}
+
+function launchApp(){
+  shouldReconnect=true;
+  // Set up topbar
+  document.getElementById("topName").textContent=myName;
+  const rb=document.getElementById("topRole");
+  rb.textContent=myRole==="sender"?"Sender":"Receiver";
+  rb.className="topbar-role "+myRole;
+  // Show/hide role-specific elements
+  document.getElementById("auditCard").style.display="block";
+  document.getElementById("senderAuditRow").style.display=myRole==="sender"?"grid":"none";
+  document.getElementById("receiverAuditSection").style.display=myRole==="receiver"?"block":"none";
+  document.getElementById("senderOrderForm").style.display=myRole==="sender"?"block":"none";
+  const muteCard=document.getElementById("muteCardSettings"); if(muteCard) muteCard.style.display=myRole==="sender"?"block":"none";
+  document.getElementById("clearDoneBtn").style.display=myRole==="receiver"?"inline-flex":"none";
+  document.getElementById("ordersListLabel").textContent=myRole==="receiver"?"Incoming orders to action":"Your submitted orders";
+  initNestGrid();
+  initInteractiveDashboard();
+  loadSavedReminder();
+  if(myRole==="sender") setTimeout(fcInit,200);
+  scheduleMidnightReset();
+  checkSummaryExpiry();
+  showScreen("appScreen");
+  updateGreeting();
+  connect();
+}
+
+function switchRole(role){
+  myRole=role;
+  try{localStorage.setItem("tp_role",role);}catch(e){}
+  // Update topbar badge
+  const rb=document.getElementById("topRole");
+  rb.textContent=role==="sender"?"Sender":"Receiver";
+  rb.className="topbar-role "+role;
+  // Show/hide role elements
+  document.getElementById("auditCard").style.display="block";
+  document.getElementById("senderAuditRow").style.display=role==="sender"?"grid":"none";
+  document.getElementById("receiverAuditSection").style.display=role==="receiver"?"block":"none";
+  document.getElementById("senderOrderForm").style.display=role==="sender"?"block":"none";
+  const muteCard=document.getElementById("muteCardSettings"); if(muteCard) muteCard.style.display=role==="sender"?"block":"none";
+  document.getElementById("clearDoneBtn").style.display=role==="receiver"?"inline-flex":"none";
+  document.getElementById("ordersListLabel").textContent=role==="receiver"?"Incoming orders to action":"Your submitted orders";
+  if(role==="sender"){setTimeout(fcInit,200);}
+  initInteractiveDashboard();
+  // Re-render orders for new role
+  document.getElementById("tasksList").innerHTML='<div class="orders-empty" id="tasksEmpty">No orders yet</div>';
+  Object.values(tasks).forEach(t=>{
+    if(role==="receiver"||t.from===myName){receiveTask(t,true);if(t.done)restoreDone(t);}
+  });
+  // Notify server of role change
+  updateGreeting();
+  if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:"role_change",from:myName,role}));
+}
+
+function logout(){
+  if(!confirm("Sign out?"))return;
+  shouldReconnect=false;
+  try{localStorage.removeItem("tp_name");localStorage.removeItem("tp_role");}catch(e){}
+  if(midnightResetTimer){clearTimeout(midnightResetTimer);midnightResetTimer=null;}
+  if(summaryCountdownTimer){clearInterval(summaryCountdownTimer);summaryCountdownTimer=null;}
+  if(reminderInterval){clearInterval(reminderInterval);reminderInterval=null;}
+  if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:"logout",from:myName}));
+  if(ws){ws.close();ws=null;}
+  myName="";myRole="";myStatus="online";tasks={};peers={};mutedPeers={};
+  auditTotal=0;auditByMe=0;NESTS.forEach(n=>nestCounts[n]=0);
+  feedItems=[];feedExpanded=false;
+  document.getElementById("tasksList").innerHTML='<div class="orders-empty">No orders yet</div>';
+  document.getElementById("feedLog").innerHTML='<div class="feed-empty">No activity yet</div>';
+  document.getElementById("nameInput").value="";
+  showScreen("loginScreen");
+}
+
+function forceSignOut(){
+  shouldReconnect=false;
+  try{localStorage.removeItem("tp_name");localStorage.removeItem("tp_role");}catch(e){}
+  if(midnightResetTimer){clearTimeout(midnightResetTimer);midnightResetTimer=null;}
+  if(summaryCountdownTimer){clearInterval(summaryCountdownTimer);summaryCountdownTimer=null;}
+  if(reminderInterval){clearInterval(reminderInterval);reminderInterval=null;}
+  if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:"logout",from:myName}));
+  if(ws){ws.close();ws=null;}
+  myName="";myRole="";myStatus="online";tasks={};peers={};mutedPeers={};
+  auditTotal=0;auditByMe=0;NESTS.forEach(n=>nestCounts[n]=0);
+  feedItems=[];feedExpanded=false;
+  document.getElementById("tasksList").innerHTML='<div class="orders-empty">No orders yet</div>';
+  document.getElementById("feedLog").innerHTML='<div class="feed-empty">No activity yet</div>';
+  document.getElementById("nameInput").value="";
+  showScreen("loginScreen");
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────────
+function switchTab(t){
+  ["main","activity","summary","archive","settings","admin"].forEach(id=>{
+    const tab=document.getElementById("tab"+id.charAt(0).toUpperCase()+id.slice(1));
+    const btn=document.getElementById("ntab-"+id);
+    if(tab)tab.style.display=t===id?"block":"none";
+    if(btn)btn.className="nav-tab"+(t===id?" active":"");
+  });
+  if(t==="summary")refreshSummary();
+  if(t==="archive"){loadXlsxList();loadReportSummaries();}
+  if(t==="admin"){loadAdminDashboard();}
+  if(t==="settings"){
+    document.getElementById("settingsName").textContent=myName;
+    document.getElementById("settingsRole").textContent=myRole==="sender"?"Sender":"Receiver";
+    renderMuteTargetsSettings();
+  }
+}
+
+function renderMuteTargetsSettings(){
+  const c=document.getElementById("muteTargetsSettings");if(!c)return;
+  const receivers=Object.keys(peers).filter(n=>peers[n].role==="receiver");
+  const mc=document.getElementById("muteCardSettings");
+  if(mc)mc.style.display=myRole==="sender"?"block":"none";
+  if(!receivers.length){c.innerHTML='<span style="font-size:13px;color:var(--text-3);">No receivers online</span>';return;}
+  c.innerHTML=receivers.map(n=>{
+    const muted=mutedPeers[n]||false;
+    return `<div class="mute-chip${muted?" muted":""}" onclick="togglePeerMute('${esc(n)}')">
+      ${muted?"&#x1F507;":"&#x1F514;"} ${esc(n)} <span style="font-size:11px;opacity:.7;">${muted?"(muted)":"(sound on)"}</span>
+    </div>`;
+  }).join("");
+}
+
+// ── Audio ──────────────────────────────────────────────────────────────────────
+function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playSound(type){
+  if(isMuted)return;
+  const ctx=getCtx(),vol=parseFloat(document.getElementById("volSlider").value);
+  const g=ctx.createGain();g.gain.setValueAtTime(vol,ctx.currentTime);g.connect(ctx.destination);
+  const mk=(f,t2,w,s,d)=>{const o=ctx.createOscillator();o.type=w;o.frequency.setValueAtTime(f,ctx.currentTime+s);if(t2)o.frequency.exponentialRampToValueAtTime(t2,ctx.currentTime+s+d);o.connect(g);o.start(ctx.currentTime+s);o.stop(ctx.currentTime+s+d+.05);};
+  if(type==="ding")mk(880,660,"sine",0,.35);
+  else if(type==="chime")[523,659,784].forEach((f,i)=>mk(f,null,"triangle",i*.12,.22));
+  else if(type==="blip"){g.gain.setValueAtTime(vol*.4,ctx.currentTime);mk(1200,null,"square",0,.07);}
+  else if(type==="alert")[0,.15,.3].forEach(t3=>{const o=ctx.createOscillator(),gg=ctx.createGain();o.type="sawtooth";o.frequency.setValueAtTime(440,ctx.currentTime+t3);gg.gain.setValueAtTime(vol*.3,ctx.currentTime+t3);o.connect(gg);gg.connect(ctx.destination);o.start(ctx.currentTime+t3);o.stop(ctx.currentTime+t3+.1);});
+  else if(type==="pop"){const o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(300,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(60,ctx.currentTime+.1);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.1);o.connect(g);o.start();o.stop(ctx.currentTime+.12);}
+}
+function previewSound(){playSound(document.getElementById("soundSelect").value);}
+
+// ── WebSocket ──────────────────────────────────────────────────────────────────
+function connect(){
+  const proto=location.protocol==="https:"?"wss":"ws";
+  ws=new WebSocket(`${proto}://${location.host}/`);
+  ws.onopen=()=>{
+    setConn(true);
+    shouldReconnect=true;
+    ws.send(JSON.stringify({type:"join",from:myName,role:myRole,status:"online"}));
+  };
+  ws.onclose=()=>{
+    setConn(false);
+    if(shouldReconnect)setTimeout(connect,3000);
+  };
+  ws.onerror=()=>ws.close();
+  ws.onmessage=(e)=>{
+    let d;
+    try{d=JSON.parse(e.data);}catch{return;}
+    if(d.from===myName&&d.type!=="state_sync")return;
+    handle(d);
+  };
+}
+
+function handle(d){
+  if(d.type==="presence_list"){
+    const prev={};Object.keys(peers).forEach(n=>{prev[n]=peers[n].selected;});
+    peers={};
+    d.members.forEach(m=>{if(m.name!==myName)peers[m.name]={status:m.status||"online",role:m.role,soundMuted:!!m.soundMuted,selected:prev[m.name]!==false};});
+    renderPeers();
+    if(document.getElementById("tabAdmin")?.style.display!=="none")loadAdminDashboard();
+  }else if(d.type==="admin_event"){
+    if(document.getElementById("tabAdmin")?.style.display!=="none")loadAdminDashboard();
+  }else if(d.type==="admin_removed"){
+    alert("You were removed from the online session by "+(d.by||"Admin")+".");
+    forceSignOut();
+  }else if(d.type==="role_change"){
+    if(peers[d.from])peers[d.from].role=d.role;
+    renderPeers();
+  }else if(d.type==="join"){
+    if(!peers[d.from])peers[d.from]={status:"online",role:d.role,selected:true};
+    renderPeers();addFeed("lv",d.from+" joined as "+(d.role||"member"));
+  }else if(d.type==="leave"){
+    addFeed("lv",d.from+" went offline");delete peers[d.from];renderPeers();
+  }else if(d.type==="status"){
+    if(!peers[d.from])peers[d.from]={selected:true};
+    peers[d.from].status=d.status;renderPeers();
+  }else if(d.type==="mute_peer"){
+    // Receiver receives mute/unmute command from sender
+    if(d.target===myName){
+      isMuted=d.muted;
+      showBanner(d.muted?"&#x1F507; You have been muted by "+d.from:"&#x1F514; You have been unmuted by "+d.from);
+    }
+  }else if(d.type==="ping"){
+    const isForMe=!d.to||(Array.isArray(d.to)?d.to.includes(myName):d.to===myName);
+    if(isForMe&&!isMuted){
+      playSound(document.getElementById("soundSelect").value);
+      const directed=d.to&&(Array.isArray(d.to)?d.to.length<Object.keys(peers).length+1:true);
+      const msg=directed?d.from+" pinged you directly!":d.from+" pinged everyone!";
+      showBanner("&#x1F514; "+msg);addFeed("pi",directed?d.from+" pinged you directly":d.from+" pinged everyone");pushNotif(msg);
+    }
+  }else if(d.type==="ack"){
+    const L={done:"Done ✓","need-help":"Needs help ⚠","on-it":"On it ⏳"};
+    if(!isMuted)playSound("blip");showBanner(d.from+": "+(L[d.value]||d.value));addFeed("ack",d.from+": "+(L[d.value]||d.value));
+  }else if(d.type==="msg"){
+    const isForMe=!d.to||d.to===myName;
+    if(!isForMe)return;
+    if(!isMuted)playSound("pop");
+    showMessageAckModal(d);
+    addFeed("mi",(d.to?"Direct from ":"")+d.from+": "+d.text+" (waiting for acknowledgement)");
+    pushNotif(d.from+": "+d.text);
+  }else if(d.type==="msg_ack"){
+    addFeed("ack",d.by+" acknowledged your message");
+    showBanner("✓ "+d.by+" acknowledged your message");
+  }else if(d.type==="reminder_set"){
+    applySharedReminder(d.time,d.from);
+  }else if(d.type==="reminder_clear"){
+    applySharedReminderClear(d.from);
+  }else if(d.type==="state_sync"){
+    tasks={};
+    document.getElementById("tasksList").innerHTML='<div class="orders-empty" id="tasksEmpty">No orders yet</div>';
+    auditTotal=0;auditByMe=0;NESTS.forEach(n=>nestCounts[n]=0);
+    d.orders.forEach(o=>{
+      if(myRole==="receiver"||o.from===myName){receiveTask(o,true);if(o.done)restoreDone(o);}
+      else{tasks[o.id]=o;}
+    });
+    if(d.auditCounts){
+      auditTotal=d.auditCounts.total;document.getElementById("auditTotal").textContent=auditTotal;
+      const bn=d.auditCounts.byNest||{};
+      NESTS.forEach(n=>{nestCounts[n]=bn[n]||0;const el=document.getElementById("nest-"+n);if(el)el.textContent=nestCounts[n];});
+      updatePending();updateAvgTime();
+    }
+  }else if(d.type==="task_new"){
+    if(myRole==="receiver"){
+      // Only show to assigned recipient or all receivers if no recipient set
+      const isForMe=!d.task.recipient||d.task.recipient===myName;
+      if(isForMe){
+        receiveTask(d.task);
+        showAcceptModal(d.task); // pop-up to accept
+      }
+    }else if(!tasks[d.task.id]){tasks[d.task.id]=d.task;}
+    showBanner(d.task.from+" submitted order: "+d.task.orderID);
+    addFeed("tl",d.task.from+" submitted order "+d.task.orderID+" → "+d.task.nest);
+    pushNotif(d.task.from+": new order "+d.task.orderID);
+  }else if(d.type==="task_done"){
+    markDone(d.taskId,d.by,d.doneTime,false,d.doneTimestamp);
+    if(!isMuted)playSound("blip");
+    showBanner(d.by+" completed an order!");
+    addFeed("tl",d.by+" completed order "+(tasks[d.taskId]?.orderID||"")+" ("+(tasks[d.taskId]?.nest||"")+")");
+  }else if(d.type==="task_note"){
+    if(tasks[d.taskId])tasks[d.taskId].notes=d.notes;
+    const ta=document.getElementById("notes-"+d.taskId);
+    if(ta&&document.activeElement!==ta)ta.value=d.notes||"";
+    // Show comment alert to the other side
+    if(d.notes&&d.from!==myName){
+      showCommentAlert(d.taskId,d.notes,d.from);
+    }
+  }else if(d.type==="task_update"){
+    if(tasks[d.taskId]){
+      Object.assign(tasks[d.taskId],d.patch||{});
+      rerenderTasks();
+      addFeed("tl",(d.from||"Team")+" updated order "+(tasks[d.taskId]?.orderID||""));
+    }
+  }else if(d.type==="comment_alert"){
+    const isForMe=!d.target||d.target===myName;
+    if(myRole==="receiver"&&isForMe&&d.from!==myName){
+      if(tasks[d.taskId])tasks[d.taskId].notes=d.note||"";
+      const ta=document.getElementById("notes-"+d.taskId);
+      if(ta&&document.activeElement!==ta)ta.value=d.note||"";
+      showCommentAlert(d.taskId,d.note||"",d.from);
+    }
+  }else if(d.type==="order_accepted"||d.type==="task_accept"){
+    if(tasks[d.taskId])tasks[d.taskId].accepted=true;
+    const order=tasks[d.taskId];
+    addFeed("tl",d.by+" reviewed/accepted order "+(order?.orderID||"")+" — working on it");
+    showBanner(d.by+" reviewed your order "+(order?.orderID||""));
+    if(myRole==="sender"&&order&&order.from===myName){
+      showReviewPopup(order,d.by);
+    }
+  }else if(d.type==="comment_ack"){
+    addFeed("ack",d.by+" acknowledged your comment on order "+(tasks[d.taskId]?.orderID||""));
+  }else if(d.type==="day_reset"||d.type==="reset_day"){
+    const toArchive=Object.values(tasks).map(t=>({...t,archivedAt:now()}));
+    try{const prev=JSON.parse(localStorage.getItem("tp_archive")||"[]");localStorage.setItem("tp_archive",JSON.stringify([...prev,...toArchive]));}catch(e){}
+    tasks={};
+    document.getElementById("tasksList").innerHTML='<div class="orders-empty" id="tasksEmpty">No orders yet</div>';
+    auditTotal=0;auditByMe=0;
+    NESTS.forEach(n=>{nestCounts[n]=0;const el=document.getElementById("nest-"+n);if(el)el.textContent=0;});
+    document.getElementById("auditTotal").textContent=0;
+    document.getElementById("auditByMe").textContent=0;
+    const rByMe=document.getElementById("auditByMeR");if(rByMe)rByMe.textContent=0;
+    updatePending();updateAvgTime();addFeed("mi","Day reset — orders saved to report and board cleared for everyone");loadXlsxList();loadReportSummaries();
+  }
+}
+
+// ── Peers ──────────────────────────────────────────────────────────────────────
+function renderPeers(){
+  const bar=document.getElementById("peerBar");
+  const names=Object.keys(peers);
+  if(!names.length){bar.innerHTML='<span class="peer-empty">Waiting for teammates... Open the same server link on another device/browser.</span>';renderPingTargets();renderMuteTargets();return;}
+  bar.innerHTML=names.map(n=>{
+    const s=peers[n].status||"online";
+    const role=peers[n].role||"";
+    const muted=mutedPeers[n]?"&#x1F507; ":"";
+    return `<span class="peer-chip ${s}"><span class="pc-dot"></span>${muted}${esc(n)}<span style="font-size:10px;opacity:.6;margin-left:3px;">${role}</span></span>`;
+  }).join("");
+  renderPingTargets();
+  renderMuteTargets();
+}
+
+function renderPingTargets(){
+  const c=document.getElementById("pingTargets");
+  const names=Object.keys(peers);
+  if(!names.length){c.innerHTML='<span style="font-size:13px;color:var(--text-3);">Waiting for teammates... Open the same server link on another device/browser.</span>';updatePingBtn();return;}
+  c.innerHTML=names.map(n=>{
+    const s=peers[n].status||"online";
+    const chk=peers[n].selected!==false;
+    const sid=safeId(n);
+    return `<label class="ptcb st-${s}${chk?" chk":""}" id="ptl-${sid}">
+      <input type="checkbox" id="pt-${sid}" ${chk?"checked":""} onchange='toggleTarget(${JSON.stringify(n)},this.checked)'/>
+      <span class="cd"></span>${esc(n)}</label>`;
+  }).join("");
+  updatePingBtn();
+}
+
+function renderMuteTargets(){
+  if(myRole!=="sender")return;
+  const c=document.getElementById("muteTargets");
+  const receivers=Object.keys(peers).filter(n=>peers[n].role==="receiver");
+  if(!receivers.length){c.innerHTML='<span style="font-size:13px;color:var(--text-3);">No receivers online</span>';return;}
+  c.innerHTML=receivers.map(n=>{
+    const muted=mutedPeers[n]||false;
+    return `<div class="mute-chip${muted?" muted":""}" onclick='togglePeerMute(${JSON.stringify(n)})'>
+      ${muted?"&#x1F507;":"&#x1F514;"} ${esc(n)} ${muted?"(muted)":"(sound on)"}
+    </div>`;
+  }).join("");
+}
+
+function togglePeerMute(name){
+  mutedPeers[name]=!mutedPeers[name];
+  if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:"mute_peer",from:myName,target:name,muted:mutedPeers[name]}));
+  renderMuteTargets();renderPeers();
+  addFeed("mi",mutedPeers[name]?"You muted "+name:"You unmuted "+name);
+}
+
+function toggleTarget(n,v){
+  if(peers[n])peers[n].selected=v;
+  const l=document.getElementById("ptl-"+safeId(n));if(l)l.className=l.className.replace(" chk","")+(v?" chk":"");
+  updatePingBtn();
+}
+function selAll(v){
+  Object.keys(peers).forEach(n=>{peers[n].selected=v;
+    const sid=safeId(n);
+    const cb=document.getElementById("pt-"+sid);if(cb)cb.checked=v;
+    const l=document.getElementById("ptl-"+sid);if(l)l.className=l.className.replace(" chk","")+(v?" chk":"");
+  });updatePingBtn();
+}
+function updatePingBtn(){
+  const sel=Object.keys(peers).filter(n=>peers[n].selected!==false);
+  const btn=document.getElementById("pingBtn");const lbl=document.getElementById("pselLbl");
+  if(!sel.length){btn.style.opacity=".5";btn.style.cursor="default";lbl.textContent="Select at least one person";}
+  else if(sel.length===Object.keys(peers).length){btn.style.opacity="";btn.style.cursor="";lbl.textContent="Pinging everyone ("+sel.length+")";}
+  else{btn.style.opacity="";btn.style.cursor="";lbl.textContent="Pinging "+sel.length+" of "+Object.keys(peers).length;}
+}
+
+// ── Actions ────────────────────────────────────────────────────────────────────
+function sendPing(){
+  if(!ws||ws.readyState!==1)return;
+  const targets=Object.keys(peers).filter(n=>peers[n].selected!==false);
+  if(!targets.length)return;
+  const toAll=targets.length===Object.keys(peers).length;
+  ws.send(JSON.stringify({type:"ping",from:myName,to:toAll?null:targets}));
+  playSound(document.getElementById("soundSelect").value);
+  addFeed("po",toAll?"You pinged everyone":"You pinged: "+targets.join(", "));
+  const btn=document.getElementById("pingBtn");btn.textContent="✓ Sent!";btn.classList.add("sent");
+  setTimeout(()=>{btn.innerHTML="&#x1F514; Send Ping";btn.classList.remove("sent");btn.style.opacity="";},1400);
+}
+function sendAck(v){
+  if(!ws||ws.readyState!==1)return;
+  ws.send(JSON.stringify({type:"ack",from:myName,value:v}));playSound("blip");
+  const L={done:"Done ✓","need-help":"Need help ⚠","on-it":"On it ⏳"};
+  addFeed("ack","You replied: "+L[v]);
+}
+function quickFillMsg(text){
+  const inp=document.getElementById("msgInput");
+  if(inp){inp.value=text;inp.focus();}
+}
+
+function showMsgOptions(){
+  const t=document.getElementById("msgInput").value.trim();
+  if(!t)return;
+  const row=document.getElementById("msgOptionsRow");
+  const btns=document.getElementById("msgRecipientBtns");
+  row.style.display="flex";
+  // Build recipient buttons: each peer + "Everyone"
+  const allPeers=Object.keys(peers);
+  let html=`<button class="btn btn-blue btn-sm" onclick="sendMsg(null)" style="flex:none;">Everyone</button>`;
+  allPeers.forEach(n=>{
+    html+=`<button class="btn btn-outline btn-sm" onclick='sendMsg(${JSON.stringify(n)})' style="flex:none;">${esc(n)}</button>`;
+  });
+  btns.innerHTML=html;
+}
+
+function sendMsg(target){
+  const inp=document.getElementById("msgInput"),t=inp.value.trim();
+  if(!t||!ws||ws.readyState!==1)return;
+  const msgId=Date.now()+"-"+myName+"-"+Math.random().toString(36).slice(2,8);
+  ws.send(JSON.stringify({type:"msg",id:msgId,from:myName,text:t,to:target||null}));
+  addFeed("mo","You → "+(target||"everyone")+": "+t);
+  playSound("pop");inp.value="";
+  // Hide options row
+  const row=document.getElementById("msgOptionsRow");if(row)row.style.display="none";
+}
+function showMessageAckModal(d){
+  pendingMessageAck = {
+    id: d.id || (Date.now()+"-"+(d.from||"unknown")),
+    from: d.from,
+    text: d.text,
+    isDirect: !!d.to
+  };
+  const modal = document.getElementById("messageAckModal");
+  const initials = String(d.from||"?").split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);
+  document.getElementById("messageAckAvatar").textContent = initials;
+  document.getElementById("messageAckFrom").textContent = d.from || "Unknown sender";
+  document.getElementById("messageAckDirect").textContent = d.to ? "Direct message to you" : "Message to everyone";
+  document.getElementById("messageAckText").textContent = d.text || "";
+  modal.style.display = "flex";
+}
+
+function acknowledgeMessage(){
+  if(!pendingMessageAck)return;
+  const ack = {type:"msg_ack",id:pendingMessageAck.id,from:myName,by:myName,to:pendingMessageAck.from};
+  if(ws&&ws.readyState===1)ws.send(JSON.stringify(ack));
+  addFeed("ack","You acknowledged message from "+pendingMessageAck.from);
+  document.getElementById("messageAckModal").style.display = "none";
+  pendingMessageAck = null;
+}
+
+function showMsgPopup(from, text, isDirect){
+  const modal = document.getElementById("msgPopupModal");
+  const initials = from.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);
+  document.getElementById("msgPopupAvatar").textContent = initials;
+  document.getElementById("msgPopupFrom").textContent = from;
+  document.getElementById("msgPopupDirect").textContent = isDirect ? "Direct message to you" : "Message to everyone";
+  document.getElementById("msgPopupText").textContent = text;
+  modal.style.display = "flex";
+  // Auto-dismiss after 8 seconds
+  clearTimeout(modal._t);
+  modal._t = setTimeout(()=>{ modal.style.display="none"; }, 8000);
+}
+
+let _replyTarget = null;
+function showMsgPopupAndSetReply(from, text, isDirect){
+  _replyTarget = isDirect ? from : null;
+  showMsgPopup(from, text, isDirect);
+}
+
+function replyToSender(){
+  document.getElementById("msgPopupModal").style.display = "none";
+  // Switch to main tab and pre-fill the message input
+  switchTab("main");
+  const inp = document.getElementById("msgInput");
+  if(inp){ inp.focus(); inp.value = ""; }
+  // Show options pre-directed to the sender
+  if(_replyTarget){
+    showMsgOptions();
+    // Highlight the sender button
+    setTimeout(()=>{
+      const btns = document.getElementById("msgRecipientBtns");
+      if(btns){
+        [...btns.querySelectorAll("button")].forEach(b=>{
+          if(b.textContent.trim()===_replyTarget) b.style.boxShadow="0 0 0 2px var(--blue)";
+        });
+      }
+    },100);
+  }
+}
+
+function refreshTeamConnection(){
+  if(ws){try{ws.close();}catch(e){}}
+  shouldReconnect=true;
+  connect();
+}
+
+function toggleLive(){
+  myStatus=myStatus!=="offline"?"offline":"online";
+  const btn=document.getElementById("liveBtn");
+  btn.className="tb-btn "+(myStatus==="offline"?"offline":"online");
+  btn.innerHTML=myStatus==="offline"?"&#x25CB; Offline":"&#x25CF; Online";
+  if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:"status",from:myName,status:myStatus}));
+}
+function resetDay(){
+  if(!confirm("Reset today's orders and move them to archive?"))return;
+  if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:"reset_day"}));
+}
+function clearDoneOrders(){
+  // Remove completed orders from the list view (receiver only)
+  Object.keys(tasks).forEach(id=>{
+    if(tasks[id].done){
+      const el=document.getElementById("task-"+id);if(el)el.remove();
+    }
+  });
+  if(!document.getElementById("tasksList").children.length){
+    document.getElementById("tasksList").innerHTML='<div class="orders-empty" id="tasksEmpty">No pending orders</div>';
+  }
+}
+
+// ── Orders ─────────────────────────────────────────────────────────────────────
+// ── Flashcard order form ──────────────────────────────────────────────────────
+const FC_STEPS = [
+  { id:"recipient", q:"Who is this order for?", hint:"Select the receiver who will action this order",
+    type:"recipient"},
+  { id:"nest",   q:"Which nest is this order for?", hint:"Select the delivery nest",
+    type:"choice", options:[
+      {val:"GH-1",icon:"📍"},{val:"GH-2",icon:"📍"},{val:"GH-3",icon:"📍"},
+      {val:"GH-4",icon:"📍"},{val:"GH-5",icon:"📍"},{val:"GH-6",icon:"📍"}
+    ]},
+  { id:"priority", q:"What is the priority level?", hint:"Choose how urgent this order is",
+    type:"choice", options:[
+      {val:"Emergency",icon:"🔴",desc:"Immediate action required"},
+      {val:"Replenishment",icon:"🟡",desc:"Stock running low"},
+      {val:"Scheduled",icon:"🔵",desc:"Planned routine order"}
+    ]},
+  { id:"type", q:"What type of order is this?", hint:"Select the product category",
+    type:"choice", options:[
+      {val:"Medical",icon:"💊",desc:"Medical supplies & equipment"},
+      {val:"Vaccine",icon:"💉",desc:"Vaccines & immunisation products"}
+    ]},
+  { id:"orderID", q:"Enter the Order ID", hint:"Type the exact order reference",
+    type:"text", placeholder:"e.g. VX-2024-089"},
+  { id:"links", q:"Add reference links", hint:"Optional — paste URLs for this order",
+    type:"links"}
+];
+
+let fcData = {recipient:"",nest:"",priority:"",type:"",orderID:"",link:"",link2:""};
+let fcStep = 0;
+let fcInited = false;
+
+function fcInit(){
+  if(!fcInited){ fcInited=true; fcData={recipient:"",nest:"",priority:"",type:"",orderID:"",link:"",link2:""}; fcStep=0; }
+  renderFcDots();
+  renderFcStep();
+}
+
+function fcReset(){
+  fcData={recipient:"",nest:"",priority:"",type:"",orderID:"",link:"",link2:""};
+  fcStep=0;fcInited=true;
+  document.getElementById("fcResetBtn").style.display="none";
+  document.getElementById("fcSummary").style.display="none";
+  renderFcDots();renderFcStep();
+}
+
+function renderFcDots(){
+  const dots=document.getElementById("fcDots");
+  dots.innerHTML=FC_STEPS.map((_,i)=>`<span class="fc-dot ${i<fcStep?"done":i===fcStep?"active":""}"></span>`).join("");
+  document.getElementById("fcStepLabel").textContent=`Step ${fcStep+1} of ${FC_STEPS.length}`;
+  const pct=((fcStep)/FC_STEPS.length)*100;
+  document.getElementById("fcBar").style.width=pct+"%";
+}
+
+function renderFcStep(){
+  const step=FC_STEPS[fcStep];
+  const body=document.getElementById("fcBody");
+  const backBtn=document.getElementById("fcBackBtn");
+  const nextBtn=document.getElementById("fcNextBtn");
+  backBtn.style.display=fcStep>0?"block":"none";
+
+  if(step.type==="choice"){
+    const cur=fcData[step.id];
+    body.innerHTML=`
+      <div class="fc-question">${step.q}</div>
+      <div class="fc-hint">${step.hint}</div>
+      <div class="fc-options" style="grid-template-columns:${step.options.length<=3?"1fr":"1fr 1fr"};">
+        ${step.options.map(o=>`
+          <button class="fc-option ${o.val} ${cur===o.val?"selected":""}" onclick="fcSelect('${step.id}','${o.val}')">
+            <span class="fc-option-icon">${o.icon}</span>
+            <div><div style="font-weight:700;">${o.val}</div>${o.desc?`<div style="font-size:11px;opacity:.7;margin-top:1px;">${o.desc}</div>`:""}</div>
+          </button>`).join("")}
+      </div>`;
+    nextBtn.disabled=!cur;
+    nextBtn.innerHTML=cur?"Next →":"Select one";
+  }else if(step.type==="text"){
+    const cur=fcData[step.id]||"";
+    body.innerHTML=`
+      <div class="fc-question">${step.q}</div>
+      <div class="fc-hint">${step.hint}</div>
+      <div class="fc-text-step">
+        <input class="form-field" type="text" id="fcTextInput" value="${esc(cur)}" placeholder="${step.placeholder||""}" maxlength="40"
+          style="font-size:18px;padding:14px 16px;font-weight:700;"
+          oninput="fcData['${step.id}']=this.value.trim();document.getElementById('fcNextBtn').disabled=!this.value.trim();"
+          onkeydown="if(event.key==='Enter'&&this.value.trim())fcNext();"/>
+      </div>`;
+    nextBtn.disabled=!cur;
+    nextBtn.innerHTML=cur?"Next →":"Type and press Enter";
+    setTimeout(()=>document.getElementById("fcTextInput")?.focus(),50);
+  }else if(step.type==="recipient"){
+    const receivers=Object.keys(peers).filter(n=>peers[n].role==="receiver");
+    const cur=fcData.recipient;
+    body.innerHTML=`
+      <div class="fc-question">${step.q}</div>
+      <div class="fc-hint">${step.hint}</div>
+      <div class="fc-recipient-list" id="fcRecipientList">
+        ${receivers.length?receivers.map(n=>{
+          const initials=n.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);
+          return `<div class="fc-recipient-item${cur===n?" selected":""}" onclick="fcSelectRecipient('${esc(n)}')">
+            <div class="fc-recipient-avatar">${initials}</div>
+            <div><div class="fc-recipient-name">${esc(n)}</div><div class="fc-recipient-role">Receiver · Online</div></div>
+          </div>`;
+        }).join(""):`<div style="font-size:14px;color:var(--text-3);padding:1rem;text-align:center;">No receivers online right now.<br>They will appear here when they join.</div>`}
+      </div>`;
+    nextBtn.disabled=!cur&&receivers.length>0;
+    nextBtn.innerHTML=cur?"Next →":(receivers.length?"Select a receiver":"Skip →");
+    if(!receivers.length)nextBtn.disabled=false;
+  }else if(step.type==="links"){
+    body.innerHTML=`
+      <div class="fc-question">${step.q}</div>
+      <div class="fc-hint">${step.hint}</div>
+      <div class="fc-text-step">
+        <input class="form-field" type="text" id="fcLink1" value="${esc(fcData.link)}" placeholder="🔗 Link 1 — paste a URL (optional)"
+          oninput="fcData.link=this.value.trim()"/>
+        <input class="form-field" type="text" id="fcLink2" value="${esc(fcData.link2)}" placeholder="🔗 Link 2 — paste a URL (optional)"
+          oninput="fcData.link2=this.value.trim()"/>
+      </div>`;
+    nextBtn.disabled=false;
+    nextBtn.innerHTML="Review order →";
+  }
+
+  // Show running summary in footer
+  const sumEl=document.getElementById("fcSummary");
+  if(fcStep>0){
+    const entries=[];
+    if(fcData.recipient)entries.push({l:"Assigned to",v:fcData.recipient});
+    if(fcData.nest)entries.push({l:"Nest",v:fcData.nest});
+    if(fcData.priority)entries.push({l:"Priority",v:fcData.priority});
+    if(fcData.type)entries.push({l:"Type",v:fcData.type});
+    if(fcData.orderID)entries.push({l:"Order ID",v:fcData.orderID});
+    sumEl.style.display="block";
+    sumEl.innerHTML=entries.map(e=>`<div class="fc-summary-row"><span class="fc-summary-lbl">${e.l}</span><span class="fc-summary-val">${esc(e.v)}</span></div>`).join("");
+  }else{sumEl.style.display="none";}
+}
+
+function fcSelectRecipient(name){
+  fcData.recipient=name;
+  document.querySelectorAll(".fc-recipient-item").forEach(el=>{
+    el.classList.toggle("selected",el.querySelector(".fc-recipient-name")?.textContent===name);
+  });
+  document.getElementById("fcNextBtn").disabled=false;
+  document.getElementById("fcNextBtn").innerHTML="Next →";
+  setTimeout(()=>fcNext(),300);
+}
+
+function fcSelect(field,val){
+  fcData[field]=val;
+  // Re-render options highlighting
+  document.querySelectorAll(".fc-option").forEach(b=>{
+    b.classList.toggle("selected",b.textContent.trim().startsWith(val)||b.querySelector("div div")?.textContent===val);
+  });
+  // Re-render properly
+  renderFcStep();
+  // Auto-advance after brief delay for visual feedback
+  setTimeout(()=>fcNext(),300);
+}
+
+function fcNext(){
+  const step=FC_STEPS[fcStep];
+  if(step.type==="text"){
+    const v=document.getElementById("fcTextInput")?.value.trim()||"";
+    if(!v)return;
+    fcData[step.id]=v;
+  }
+  if(fcStep<FC_STEPS.length-1){
+    fcStep++;
+    renderFcDots();
+    renderFcStep();
+    document.getElementById("fcResetBtn").style.display="block";
+  }else{
+    // Final step — show confirmation and submit
+    fcShowConfirm();
+  }
+}
+
+function fcBack(){
+  if(fcStep>0){fcStep--;renderFcDots();renderFcStep();}
+}
+
+function fcShowConfirm(){
+  const body=document.getElementById("fcBody");
+  const nextBtn=document.getElementById("fcNextBtn");
+  document.getElementById("fcBar").style.width="100%";
+  document.getElementById("fcStepLabel").textContent="Ready to submit";
+  body.innerHTML=`
+    <div class="fc-question">Review &amp; confirm</div>
+    <div class="fc-hint">Check the details below before submitting</div>`;
+  const sumEl=document.getElementById("fcSummary");
+  sumEl.style.display="block";
+  const entries=[
+    {l:"Assigned to",v:fcData.recipient||"All receivers"},
+    {l:"Nest",v:fcData.nest},{l:"Priority",v:fcData.priority},
+    {l:"Type",v:fcData.type},{l:"Order ID",v:fcData.orderID}
+  ];
+  if(fcData.link)entries.push({l:"Link 1",v:fcData.link});
+  if(fcData.link2)entries.push({l:"Link 2",v:fcData.link2});
+  sumEl.innerHTML=entries.map(e=>`<div class="fc-summary-row"><span class="fc-summary-lbl">${e.l}</span><span class="fc-summary-val">${esc(e.v)}</span></div>`).join("");
+  nextBtn.disabled=false;
+  nextBtn.innerHTML="&#x2713; Submit Order";
+  nextBtn.onclick=()=>sendOrder();
+}
+
+function sendOrder(){
+  if(!ws||ws.readyState!==1)return;
+  const nest=fcData.nest;
+  const priority=fcData.priority;
+  const type=fcData.type;
+  const orderID=fcData.orderID;
+  const link=fcData.link;
+  const link2=fcData.link2;
+  const recipient=fcData.recipient||null;
+  if(!nest||!priority||!type||!orderID){alert("Please complete all steps.");return;}
+  const task={id:Date.now()+"-"+myName,from:myName,recipient,nest,priority,type,orderID,link,link2,time:now(),submitTimestamp:Date.now(),done:false,doneBy:null,doneTime:null,accepted:false};
+  ws.send(JSON.stringify({type:"task_new",task}));
+  receiveTask(task);addFeed("tl","You submitted order "+orderID+" → "+(recipient||"all receivers")+" ("+nest+")");
+  // Auto-ping recipient only, or all receivers if no recipient
+  const pingTargets=recipient?[recipient]:Object.keys(peers).filter(n=>peers[n].role==="receiver");
+  if(pingTargets.length){
+    ws.send(JSON.stringify({type:"ping",from:myName,to:pingTargets,auto:true}));
+    addFeed("po","Auto-pinged "+(recipient||"all receivers")+" about order "+orderID);
+  }
+  // Reset flashcard
+  setTimeout(()=>{
+    fcData={recipient:"",nest:"",priority:"",type:"",orderID:"",link:"",link2:""};
+    fcStep=0;
+    renderFcDots();renderFcStep();
+    document.getElementById("fcResetBtn").style.display="none";
+    document.getElementById("fcSummary").style.display="none";
+    document.getElementById("fcNextBtn").onclick=fcNext;
+    showBanner("&#x2713; Order "+orderID+" submitted!");
+  },400);
+  updatePending();updateQuickPanel();applyOrderFilters();
+}
+
+function setOrderFilter(filter){
+  currentOrderFilter=filter;
+  document.querySelectorAll(".filter-chip").forEach(b=>b.classList.remove("active"));
+  const active=document.getElementById("f-"+String(filter).toLowerCase());
+  if(active)active.classList.add("active");
+  applyOrderFilters();
+}
+
+function updateQuickPanel(){
+  const visible=Object.values(tasks).filter(t=>myRole==="receiver"||t.from===myName);
+  const all=visible.length;
+  const pending=visible.filter(t=>!t.done).length;
+  const done=visible.filter(t=>t.done).length;
+  const qAll=document.getElementById("qAll"),qPending=document.getElementById("qPending"),qDone=document.getElementById("qDone");
+  if(qAll)qAll.textContent=all;
+  if(qPending)qPending.textContent=pending;
+  if(qDone)qDone.textContent=done;
+}
+
+function applyOrderFilters(){
+  updateQuickPanel();
+  const q=(document.getElementById("orderSearch")?.value||"").toLowerCase().trim();
+  let shown=0;
+  Object.values(tasks).forEach(t=>{
+    const el=document.getElementById("task-"+t.id);
+    if(!el)return;
+    let ok=true;
+    if(currentOrderFilter==="pending")ok=!t.done;
+    else if(currentOrderFilter==="done")ok=!!t.done;
+    else if(currentOrderFilter==="Emergency")ok=t.priority==="Emergency";
+    const blob=[t.orderID,t.nest,t.priority,t.type,t.from,t.recipient,t.notes].join(" ").toLowerCase();
+    if(q&&!blob.includes(q))ok=false;
+    el.style.display=ok?"block":"none";
+    if(ok)shown++;
+  });
+  const list=document.getElementById("tasksList");
+  const old=document.getElementById("filterEmpty");
+  if(old)old.remove();
+  if(list&&shown===0&&Object.values(tasks).length){
+    const div=document.createElement("div");
+    div.id="filterEmpty";
+    div.className="orders-empty";
+    div.textContent="No orders match your filter";
+    list.appendChild(div);
+  }
+}
+
+function flashCard(id){
+  const el=document.getElementById("task-"+id);
+  if(!el)return;
+  el.classList.add("pulse-new");
+  setTimeout(()=>el.classList.remove("pulse-new"),900);
+}
+
+function receiveTask(task,silent=false){
+  if(tasks[task.id])return;
+  task.submitTimestamp=task.submitTimestamp||Date.now();
+  tasks[task.id]=task;
+  if(myRole==="sender"&&task.from!==myName)return;
+  renderSingleTask(task);
+}
+
+function rerenderTasks(){
+  const list=document.getElementById("tasksList");
+  if(!list)return;
+  list.innerHTML='<div class="orders-empty" id="tasksEmpty">No orders yet</div>';
+  Object.values(tasks).forEach(t=>{
+    if(myRole==="receiver"||t.from===myName)renderSingleTask(t);
+  });
+  updatePending();
+}
+
+function renderSingleTask(task){
+  const list=document.getElementById("tasksList");
+  if(!list)return;
+  const old=document.getElementById("task-"+task.id);
+  if(old)old.remove();
+  const empty=document.getElementById("tasksEmpty");if(empty)empty.remove();
+
+  let links="";
+  if(task.link){let h=task.link;if(!/^https?:\/\//i.test(h))h="https://"+h;links+=`<div class="order-link">&#x1F517; <a href="${esc(h)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(task.link)}</a></div>`;}
+  if(task.link2){let h=task.link2;if(!/^https?:\/\//i.test(h))h="https://"+h;links+=`<div class="order-link">&#x1F517; <a href="${esc(h)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(task.link2)}</a></div>`;}
+
+  const el=document.createElement("div");
+  el.className=`order-card pr-${task.priority||""}${task.done?" done":""}`;
+  el.id="task-"+task.id;
+  el.onclick=(ev)=>{
+    if(ev.target.closest("button,a,textarea,input,select"))return;
+    el.classList.toggle("expanded");
+  };
+
+  const isAccepted=task.accepted||false;
+  const canWork=myRole==="receiver";
+  const doneSection=task.done
+    ? `<span class="done-lbl">&#x2713; Completed by ${esc(task.doneBy||"")} at ${esc(task.doneTime||"")}</span>`
+    : canWork
+      ? (isAccepted
+          ? `<button class="mark-done-btn" onclick="completeTask('${task.id}')">&#x2713; Mark Done</button>`
+          : `<button class="mark-done-btn" onclick="showAcceptModal(tasks['${task.id}'])" style="background:var(--amber);opacity:.9;">Accept to work on it</button>`)
+      : `<span class="subby-lbl">${task.accepted?("Accepted by receiver"):"Submitted by you"}</span>`;
+
+  const senderActions = myRole==="sender" ? `
+    <button class="order-action-btn order-action-blue" onclick="pingOrderReceiver('${task.id}')">&#x1F514; Ping receiver</button>
+    <button class="order-action-btn order-action-amber" onclick="editOrderPrompt('${task.id}')">Edit details</button>
+    <button class="order-action-btn order-action-coral" onclick="archiveOrderFromBoard('${task.id}')">Remove from board</button>
+  ` : "";
+
+  const receiverActions = myRole==="receiver" ? `
+    <button class="order-action-btn order-action-blue" onclick="sendAck('on-it')">&#x23F3; Send On it</button>
+    <button class="order-action-btn order-action-coral" onclick="sendAck('need-help')">&#x26A0; Need help</button>
+    ${task.done?"":`<button class="order-action-btn order-action-green" onclick="completeTask('${task.id}')">&#x2713; Complete</button>`}
+  ` : "";
+
+  el.innerHTML=`
+    <div class="order-meta">${esc(task.from)} &bull; ${esc(task.time)}<span id="od-${task.id}"></span></div>
+    <div class="order-badges">
+      <span class="badge ${esc(task.priority)}">${esc(task.priority)}</span>
+      <span class="badge ${esc(task.type)}">${esc(task.type)}</span>
+      <span class="nest-tag">&#x1F4CD; ${esc(task.nest)}</span>
+      ${task.recipient?`<span class="nest-tag">&#x1F464; ${esc(task.recipient)}</span>`:""}
+      <span class="order-click-hint">Tap card</span>
+    </div>
+    <div class="order-id">Order ID: ${esc(task.orderID)}</div>
+    ${links}
+    ${task.accepted&&!task.done?`<div class="working-badge" style="font-size:12px;font-weight:700;color:var(--amber-t);background:var(--amber-bg);border:1px solid var(--amber);border-radius:20px;padding:3px 10px;display:inline-block;margin-top:6px;">⏳ Being worked on</div>`:""}
+    <div class="order-footer" id="tb-${task.id}">${doneSection}</div>
+    <div class="order-extra">
+      <div style="font-size:12px;color:var(--text-2);line-height:1.5;">
+        <strong>Status:</strong> ${task.done?"Completed":task.accepted?"In progress":"Pending"}<br>
+        <strong>Submitted:</strong> ${esc(task.time)} ${task.doneTime?`<br><strong>Completed:</strong> ${esc(task.doneTime)}`:""}
+      </div>
+      <div class="order-actions">${senderActions}${receiverActions}</div>
+      <div class="order-comment-row">
+        <textarea class="order-notes" id="notes-${task.id}" placeholder="Add a note or comment..." rows="1" onclick="event.stopPropagation()">${task.notes?esc(task.notes):""}</textarea>
+        <button class="order-action-btn order-action-blue" onclick="sendOrderNote('${task.id}')">Send note</button>
+      </div>
+    </div>`;
+
+  const PRIO={"Emergency":0,"Replenishment":1,"Scheduled":2};
+  const ep=PRIO[task.priority]??3;
+  const children=[...list.children].filter(c=>c.id&&c.id.startsWith("task-"));
+  let inserted=false;
+  if(!task.done){
+    for(const c of children){
+      const ct=tasks[c.id.replace("task-","")];
+      if(ct&&!ct.done&&(PRIO[ct.priority]??3)>ep){list.insertBefore(el,c);inserted=true;break;}
+    }
+  }
+  if(!inserted&&!task.done)list.prepend(el);
+  else if(!inserted)list.appendChild(el);
+  checkOverdue(task.id);updatePending();updateQuickPanel();applyOrderFilters();flashCard(task.id);
+}
+
+function sendOrderNote(id){
+  const ta=document.getElementById("notes-"+id);
+  const val=ta?ta.value:"";
+  saveNote(id,val);
+  showBanner("✓ Note sent");
+}
+
+function pingOrderReceiver(id){
+  const t=tasks[id];if(!t||!ws||ws.readyState!==1)return;
+  const targets=t.recipient?[t.recipient]:Object.keys(peers).filter(n=>peers[n].role==="receiver");
+  if(!targets.length){showBanner("No receiver online to ping.");return;}
+  ws.send(JSON.stringify({type:"ping",from:myName,to:targets,orderId:id}));
+  addFeed("po","You pinged "+targets.join(", ")+" about order "+(t.orderID||""));
+  showBanner("🔔 Receiver pinged for order "+(t.orderID||""));
+}
+
+function editOrderPrompt(id){
+  const t=tasks[id];if(!t)return;
+  const orderID=prompt("Order ID",t.orderID||""); if(orderID===null)return;
+  const nest=prompt("Nest",t.nest||""); if(nest===null)return;
+  const priority=prompt("Priority: Emergency, Replenishment, or Scheduled",t.priority||""); if(priority===null)return;
+  const type=prompt("Type: Medical or Vaccine",t.type||""); if(type===null)return;
+  const patch={orderID:orderID.trim()||t.orderID,nest:nest.trim()||t.nest,priority:priority.trim()||t.priority,type:type.trim()||t.type};
+  Object.assign(t,patch);
+  rerenderTasks();
+  if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:"task_update",taskId:id,from:myName,patch}));
+  showBanner("✓ Order updated");
+}
+
+function archiveOrderFromBoard(id){
+  if(!confirm("Remove this order from your board view? It will stay in server data until reset."))return;
+  const el=document.getElementById("task-"+id);if(el)el.remove();
+  showBanner("Order removed from your view.");
+}
+
+function completeTask(id){
+  if(!ws||ws.readyState!==1)return;
+  const t=now();
+  const doneTimestamp=Date.now();
+  ws.send(JSON.stringify({type:"task_done",taskId:id,by:myName,doneTime:t,doneTimestamp}));
+  markDone(id,myName,t,true,doneTimestamp);
+  addFeed("tl","You completed order "+(tasks[id]?.orderID||"")+" ("+(tasks[id]?.nest||"")+")");
+}
+
+function markDone(id,by,doneTime,isMine,doneTimestamp){
+  if(!tasks[id]||tasks[id].done)return;
+  tasks[id].doneTimestamp=doneTimestamp||Date.now();
+  tasks[id].done=true;tasks[id].doneBy=by;tasks[id].doneTime=doneTime;
+  const el=document.getElementById("task-"+id);if(el)el.classList.add("done");
+  const tb=document.getElementById("tb-"+id);
+  const mins=tasks[id].submitTimestamp?Math.round((tasks[id].doneTimestamp-tasks[id].submitTimestamp)/60000):null;
+  const timeTxt=mins!==null?` &bull; took <strong>${mins}m</strong>`:"";
+  if(tb)tb.innerHTML=`<span class="done-lbl">&#x2713; Completed by ${esc(by)} at ${doneTime||""}${timeTxt}</span>`;
+  auditTotal++;if(isMine)auditByMe++;
+  document.getElementById("auditTotal").textContent=auditTotal;
+  document.getElementById("auditByMe").textContent=auditByMe;
+  // Update receiver-specific boxes
+  const rByMe=document.getElementById("auditByMeR");
+  const rPend=document.getElementById("auditPendingR");
+  if(rByMe&&isMine)rByMe.textContent=auditByMe;
+  if(tasks[id].nest&&nestCounts[tasks[id].nest]!==undefined){
+    nestCounts[tasks[id].nest]++;
+    const ne=document.getElementById("nest-"+tasks[id].nest);if(ne)ne.textContent=nestCounts[tasks[id].nest];
+  }
+  updatePending();updateAvgTime();
+}
+
+function restoreDone(task){
+  if(!tasks[task.id])return;
+  tasks[task.id].done=true;tasks[task.id].doneBy=task.doneBy;tasks[task.id].doneTime=task.doneTime;
+  tasks[task.id].doneTimestamp=task.doneTimestamp||Date.now();
+  const el=document.getElementById("task-"+task.id);if(el)el.classList.add("done");
+  const tb=document.getElementById("tb-"+task.id);
+  const mins=task.submitTimestamp&&task.doneTimestamp?Math.round((task.doneTimestamp-task.submitTimestamp)/60000):null;
+  const timeTxt=mins!==null?` &bull; took <strong>${mins}m</strong>`:"";
+  if(tb)tb.innerHTML=`<span class="done-lbl">&#x2713; Completed by ${esc(task.doneBy||"")} at ${task.doneTime||""}${timeTxt}</span>`;
+}
+
+function updatePending(){
+  const p=Object.values(tasks).filter(t=>!t.done).length;
+  document.getElementById("auditPending").textContent=p;
+  const rPend=document.getElementById("auditPendingR");if(rPend)rPend.textContent=p;
+  updateQuickPanel();
+}
+function updateAvgTime(){
+  const done=Object.values(tasks).filter(t=>t.done&&t.submitTimestamp&&t.doneTimestamp);
+  const avg=done.length?Math.round(done.reduce((s,t)=>s+(t.doneTimestamp-t.submitTimestamp),0)/done.length/60000):null;
+  const display=avg!==null?avg+"m":"—";
+  const elS=document.getElementById("avgTimeAll");if(elS)elS.textContent=display;
+  const elR=document.getElementById("avgTimeR");if(elR)elR.textContent=display;
+}
+
+function initInteractiveDashboard(){
+  const pending=document.getElementById("auditPending");if(pending)pending.parentElement.onclick=()=>setOrderFilter("pending");
+  const total=document.getElementById("auditTotal");if(total)total.parentElement.onclick=()=>setOrderFilter("all");
+  const byme=document.getElementById("auditByMe");if(byme)byme.parentElement.onclick=()=>setOrderFilter("done");
+}
+
+function initNestGrid(){
+  const g=document.getElementById("nestGrid");if(!g)return;
+  g.innerHTML=NESTS.map(n=>`<div class="nest-box"><div class="nest-num" id="nest-${n}">0</div><div class="nest-lbl">${n}</div></div>`).join("");
+}
+
+function saveNote(id,val){
+  if(!tasks[id])return;tasks[id].notes=val;
+  if(ws&&ws.readyState===1){
+    ws.send(JSON.stringify({type:"task_note",taskId:id,notes:val,from:myName}));
+    // If sender, also send a comment alert to the receiver
+    if(myRole==="sender"&&val.trim()){
+      ws.send(JSON.stringify({type:"comment_alert",taskId:id,note:val,from:myName,
+        target:tasks[id].recipient||null}));
+      addFeed("mi","Comment alert sent for order "+(tasks[id]?.orderID||""));
+    }
+  }
+}
+
+// ── Overdue ────────────────────────────────────────────────────────────────────
+function checkOverdue(id){
+  if(!tasks[id]||tasks[id].done)return;
+  const age=Math.round((Date.now()-(tasks[id].submitTimestamp||Date.now()))/60000);
+  const span=document.getElementById("od-"+id);
+  if(span&&age>=30)span.innerHTML=` <span class="overdue-tag">&#x26A0; Overdue ${age}m</span>`;
+}
+setInterval(()=>Object.keys(tasks).forEach(id=>{if(!tasks[id].done)checkOverdue(id);}),60000);
+
+// ── Feed ───────────────────────────────────────────────────────────────────────
+const FEED_LIMIT=5;
+const FEED_ICONS={pi:"&#x1F514;",po:"&#x1F4E4;",tl:"&#x1F4CB;",ack:"&#x2713;",mi:"&#x1F4AC;",mo:"&#x1F4AC;",lv:"&#x1F6AA;"};
+function addFeed(cls,text){
+  const item={cls,text,time:now(),id:Date.now()};
+  feedItems.unshift(item);
+  // Leave/join events auto-remove after 20 seconds
+  if(cls==="lv"){setTimeout(()=>{feedItems=feedItems.filter(i=>i.id!==item.id);renderFeed();},20000);}
+  renderFeed();
+}
+function renderFeed(){
+  const log=document.getElementById("feedLog");
+  const show=feedExpanded?feedItems:feedItems.slice(0,FEED_LIMIT);
+  if(!feedItems.length){log.innerHTML='<div class="feed-empty">No activity yet</div>';document.getElementById("feedMore").style.display="none";return;}
+  log.innerHTML=show.map(i=>`
+    <div class="feed-card ${i.cls}">
+      <div class="feed-icon">${FEED_ICONS[i.cls]||"&#x25CF;"}</div>
+      <div class="feed-body"><div class="feed-text">${esc(i.text)}</div><div class="feed-time">${i.time}</div></div>
+    </div>`).join("");
+  const more=document.getElementById("feedMore");
+  if(feedItems.length>FEED_LIMIT){more.style.display="block";more.innerHTML=feedExpanded?"&#x25B2; Show less":"&#x25BC; Show more ("+feedItems.length+" total)";}
+  else more.style.display="none";
+}
+function toggleFeed(){feedExpanded=!feedExpanded;renderFeed();}
+function clearLog(){feedItems=[];feedExpanded=false;renderFeed();}
+
+// ── Summary helpers ────────────────────────────────────────────────────────────
+function checkSummaryExpiry(){
+  try{
+    const saved=JSON.parse(localStorage.getItem("tp_summary_date")||"null");
+    if(saved){
+      const then=new Date(saved);const now2=new Date();
+      const hrs=(now2-then)/3600000;
+      if(hrs>=24){autoExportSummaryAfter24h();clearSummaryData(true);}
+    }else{localStorage.setItem("tp_summary_date",new Date().toISOString());}
+  }catch(e){}
+}
+function clearSummaryData(auto=false){
+  if(!auto&&!confirm("Clear today's summary data?"))return;
+  try{localStorage.removeItem("tp_checks");localStorage.removeItem("tp_summary_date");}catch(e){}
+  if(!auto)refreshSummary();
+  startSummaryCountdown();
+}
+function renderReminderChecklist(){
+  const div=document.getElementById("reminderChecklist");if(!div)return;
+  try{
+    const checks=JSON.parse(localStorage.getItem("tp_checks")||"[]");
+    const todayStr=new Date().toLocaleDateString();
+    const todayChecks=checks.filter(c=>c.date===todayStr);
+    const hasMidday=todayChecks.some(c=>c.label==="Midday audit");
+    const mTime=todayChecks.find(c=>c.label==="Midday audit")?.time||"";
+    div.innerHTML=`
+      <div class="reminder-check ${hasMidday?"done":"pending"}" style="margin-bottom:14px;">
+        <div class="rcheck-icon">${hasMidday?"&#x2713;":"&#x23F3;"}</div>
+        <div class="rcheck-body">
+          <div class="rcheck-title">Midday audit reminder</div>
+          <div class="rcheck-time">${hasMidday?"Completed at "+mTime:"Not yet completed"}</div>
+        </div>
+      </div>`;
+  }catch(e){if(div)div.innerHTML="";}
+}
+function renderSummaryDate(){
+  const now2=new Date();
+  const opts={weekday:"long",year:"numeric",month:"long",day:"numeric"};
+  const ds=now2.toLocaleDateString(undefined,opts);
+  document.getElementById("sumDateText").textContent=ds;
+  document.getElementById("sumDateSub").textContent="Summary auto-clears after 24 hours and saves to Excel";
+  startSummaryCountdown();
+}
+
+function startSummaryCountdown(){
+  if(summaryCountdownTimer){clearInterval(summaryCountdownTimer);summaryCountdownTimer=null;}
+  updateSummaryCountdown();
+  summaryCountdownTimer=setInterval(updateSummaryCountdown,1000);
+}
+
+function updateSummaryCountdown(){
+  const live=document.getElementById("sumCountdownLive");
+  const expires=document.getElementById("sumExpires");
+  if(!live&&!expires)return;
+
+  let saved=null;
+  try{saved=localStorage.getItem("tp_summary_date");}catch(e){}
+  if(!saved){
+    try{localStorage.setItem("tp_summary_date",new Date().toISOString());saved=localStorage.getItem("tp_summary_date");}catch(e){}
+  }
+
+  const start=saved?new Date(saved):new Date();
+  const clearAt=start.getTime()+24*60*60*1000;
+  const diff=clearAt-Date.now();
+
+  if(diff<=0){
+    if(live){live.textContent="Refreshing summary now...";live.className="sum-countdown-live sum-countdown-danger";}
+    if(expires)expires.textContent="Due now";
+    autoExportSummaryAfter24h();
+    clearSummaryData(true);
+    try{localStorage.setItem("tp_summary_date",new Date().toISOString());}catch(e){}
+    return;
+  }
+
+  const h=Math.floor(diff/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const s=Math.floor((diff%60000)/1000);
+  const txt=`Clears in ${h}h ${String(m).padStart(2,"0")}m ${String(s).padStart(2,"0")}s`;
+  if(live){
+    live.textContent=txt;
+    live.className="sum-countdown-live"+(diff<3600000?" sum-countdown-danger":diff<3*3600000?" sum-countdown-warn":"");
+  }
+  if(expires)expires.textContent=h>=1?`${h}h left`:`${m}m left`;
+}
+
+// ── Summary ────────────────────────────────────────────────────────────────────
+function clearAndRefresh(){document.getElementById("sumStats").innerHTML="<div style='text-align:center;color:var(--text-3);padding:1rem;'>Loading...</div>";setTimeout(refreshSummary,200);}
+function refreshSummary(){
+  renderSummaryDate();
+  renderReminderChecklist();
+  const all=Object.values(tasks);
+  const done=all.filter(t=>t.done).length;const pending=all.length-done;
+  document.getElementById("sumStats").innerHTML=`
+    <div class="sum-stat"><div class="sum-num" style="color:var(--blue)">${all.length}</div><div class="sum-lbl">Total orders</div></div>
+    <div class="sum-stat"><div class="sum-num" style="color:var(--green)">${done}</div><div class="sum-lbl">Completed</div></div>
+    <div class="sum-stat"><div class="sum-num" style="color:var(--amber)">${pending}</div><div class="sum-lbl">Pending</div></div>`;
+  const priorities=["Emergency","Replenishment","Scheduled"];
+  const byP={};priorities.forEach(p=>{byP[p]={total:0,done:0};});
+  all.forEach(t=>{if(byP[t.priority]){byP[t.priority].total++;if(t.done)byP[t.priority].done++;}});
+  document.getElementById("sumByPriority").innerHTML=`<div style="overflow-x:auto;"><table class="sum-table"><thead><tr><th>Priority</th><th>Total</th><th>Done</th><th>Pending</th></tr></thead><tbody>
+    ${priorities.map(p=>`<tr><td><span class="badge ${p}">${p}</span></td><td>${byP[p].total}</td><td>${byP[p].done}</td><td>${byP[p].total-byP[p].done}</td></tr>`).join("")}</tbody></table></div>`;
+  const byN={};NESTS.forEach(n=>{byN[n]={total:0,done:0};});
+  all.forEach(t=>{if(byN[t.nest]){byN[t.nest].total++;if(t.done)byN[t.nest].done++;}});
+  document.getElementById("sumByNest").innerHTML=`<div style="overflow-x:auto;"><table class="sum-table"><thead><tr><th>Nest</th><th>Total</th><th>Done</th><th>Pending</th></tr></thead><tbody>
+    ${NESTS.map(n=>`<tr><td><strong>${n}</strong></td><td>${byN[n].total}</td><td>${byN[n].done}</td><td>${byN[n].total-byN[n].done}</td></tr>`).join("")}</tbody></table></div>`;
+  document.getElementById("sumTableBody").innerHTML=all.length?all.map(t=>{
+    const mins=t.submitTimestamp&&t.doneTimestamp?Math.round((t.doneTimestamp-t.submitTimestamp)/60000):null;
+    return `<tr><td><strong>${esc(t.orderID)}</strong></td><td>${esc(t.nest)}</td>
+      <td><span class="badge ${esc(t.priority)}">${esc(t.priority)}</span></td>
+      <td><span class="badge ${esc(t.type)}">${esc(t.type)}</span></td>
+      <td>${esc(t.from)}</td><td>${esc(t.time)}</td>
+      <td>${t.done?'<span style="color:var(--green);font-weight:700;">&#x2713; Done</span>':'<span style="color:var(--amber);font-weight:700;">Pending</span>'}</td>
+      <td>${t.doneBy?esc(t.doneBy):"—"}</td><td>${mins!==null?mins+"m":"—"}</td></tr>`;
+  }).join(""):`<tr><td colspan="9" style="text-align:center;color:var(--text-3);padding:1rem;">No orders yet</td></tr>`;
+}
+
+// ── CSV Download ───────────────────────────────────────────────────────────────
+function downloadCSV(){
+  const all=Object.values(tasks);if(!all.length){alert("No orders to download.");return;}
+  const headers=["Order ID","Nest","Priority","Type","Submitted By","Time","Status","Completed By","Completed At","Time Taken (mins)","Notes","Link 1","Link 2"];
+  const rows=all.map(t=>{
+    const mins=t.submitTimestamp&&t.doneTimestamp?Math.round((t.doneTimestamp-t.submitTimestamp)/60000):"";
+    return [t.orderID,t.nest,t.priority,t.type,t.from,t.time,t.done?"Completed":"Pending",t.doneBy||"",t.doneTime||"",mins,t.notes||"",t.link||"",t.link2||""];
+  });
+  const csvEsc=v=>{const s=String(v||"");return(s.includes(",")||s.includes('"')||s.includes("\n"))?`"${s.replace(/"/g,'""')}"`:s;};
+  const csv=[headers,...rows].map(r=>r.map(csvEsc).join(",")).join("\r\n");
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;
+  const d=new Date();a.download=`TeamPing_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}.csv`;
+  a.click();URL.revokeObjectURL(url);
+}
+
+function downloadArchiveXls(){
+  const a=document.createElement("a");
+  a.href="/archive-report.xls";
+  a.download="";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+// ── Reminder ───────────────────────────────────────────────────────────────────
+function setReminder(){
+  const t=document.getElementById("reminderTime").value;if(!t){alert("Please pick a time.");return;}
+  try{localStorage.setItem("tp_reminder",t);}catch(e){}
+  scheduleReminder(t);
+  document.getElementById("reminderStatus").textContent="Set for "+fmtTime(t);
+  document.getElementById("reminderStatus").style.color="var(--green)";
+  if(ws&&ws.readyState===1){
+    ws.send(JSON.stringify({type:"reminder_set",from:myName,time:t,label:"Midday audit"}));
+  }
+  showBanner("&#x23F0; Midday reminder set for everyone at "+fmtTime(t));
+}
+function clearReminder(){
+  if(reminderInterval){clearInterval(reminderInterval);reminderInterval=null;}
+  try{localStorage.removeItem("tp_reminder");}catch(e){}
+  document.getElementById("reminderStatus").textContent="";
+  document.getElementById("reminderTime").value="";
+  if(ws&&ws.readyState===1){
+    ws.send(JSON.stringify({type:"reminder_clear",from:myName,label:"Midday audit"}));
+  }
+  showBanner("&#x23F0; Midday reminder cleared for everyone.");
+}
+function fmtTime(t){const[h,m]=t.split(":").map(Number);const ap=h>=12?"PM":"AM";return(h%12||12)+":"+String(m).padStart(2,"0")+" "+ap;}
+
+function applySharedReminder(t,from){
+  if(!t)return;
+  try{localStorage.setItem("tp_reminder",t);}catch(e){}
+  const input=document.getElementById("reminderTime");if(input)input.value=t;
+  const status=document.getElementById("reminderStatus");
+  if(status){status.textContent="Set for "+fmtTime(t)+" by "+(from||"team");status.style.color="var(--green)";}
+  scheduleReminder(t);
+  showBanner("&#x23F0; "+(from||"Team")+" set the midday reminder for "+fmtTime(t));
+  addFeed("mi",(from||"Team")+" set the midday reminder for "+fmtTime(t));
+}
+
+function applySharedReminderClear(from){
+  if(reminderInterval){clearInterval(reminderInterval);reminderInterval=null;}
+  try{localStorage.removeItem("tp_reminder");}catch(e){}
+  const input=document.getElementById("reminderTime");if(input)input.value="";
+  const status=document.getElementById("reminderStatus");if(status)status.textContent="";
+  showBanner("&#x23F0; "+(from||"Team")+" cleared the midday reminder");
+  addFeed("mi",(from||"Team")+" cleared the midday reminder");
+}
+function scheduleReminder(t){
+  if(reminderInterval){clearInterval(reminderInterval);reminderInterval=null;}
+  reminderInterval=setInterval(()=>{
+    const n=new Date();const cur=String(n.getHours()).padStart(2,"0")+":"+String(n.getMinutes()).padStart(2,"0");
+    if(cur===t&&lastReminderFireMinute!==cur){
+      lastReminderFireMinute=cur;
+      fireReminder();
+    }
+  },30000);
+}
+function fireReminder(){
+  playSound("chime");
+  setTimeout(()=>playSound("chime"),600);
+  showBanner("&#x23F0; Reminder: Time to review your orders!");
+  pushNotif("Team Ping: Midday reminder — review your orders.");
+
+  const ov=document.createElement("div");
+  ov.id="remOv";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;";
+  ov.innerHTML=`<div style="background:var(--surface);border-radius:20px;padding:2rem;max-width:320px;width:90%;text-align:center;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.3);">
+    <div style="font-size:42px;margin-bottom:12px;">&#x23F0;</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:8px;">Midday Reminder</div>
+    <div style="font-size:14px;color:var(--text-2);margin-bottom:20px;line-height:1.5;">Review your orders, then tap complete to record this reminder.</div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button onclick="completeMiddayReminder()" style="padding:12px 20px;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">Complete</button>
+      <button onclick="dismissMiddayReminder()" style="padding:12px 20px;background:transparent;color:var(--text);border:1.5px solid var(--border-md);border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">Later</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+function dismissMiddayReminder(){
+  const ov=document.getElementById("remOv");
+  if(ov)ov.remove();
+}
+
+function completeMiddayReminder(){
+  const t=now();
+  const d=new Date();
+  try{
+    const checks=JSON.parse(localStorage.getItem("tp_checks")||"[]");
+    const today=d.toLocaleDateString();
+    const filtered=checks.filter(c=>!(c.date===today&&c.label==="Midday audit"));
+    filtered.push({label:"Midday audit",time:t,date:today,done:true});
+    localStorage.setItem("tp_checks",JSON.stringify(filtered));
+  }catch(e){}
+  dismissMiddayReminder();
+  renderReminderChecklist();
+  showBanner("&#x2713; Midday reminder recorded.");
+}
+
+function loadSavedReminder(){
+  try{const t=localStorage.getItem("tp_reminder");if(t){document.getElementById("reminderTime").value=t;document.getElementById("reminderStatus").textContent="Set for "+fmtTime(t);document.getElementById("reminderStatus").style.color="var(--green)";scheduleReminder(t);}}catch(e){}
+}
+
+// ── Midnight auto-archive ──────────────────────────────────────────────────────
+function scheduleMidnightReset(){
+  if(midnightResetTimer){clearTimeout(midnightResetTimer);midnightResetTimer=null;}
+  const n=new Date();
+  const ms=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,5).getTime()-n.getTime();
+  midnightResetTimer=setTimeout(()=>{doArchiveAndReset();scheduleMidnightReset();},ms);
+}
+async function doArchiveAndReset(){
+  const hasOrders=Object.values(tasks).length>0;
+  // Save xlsx before resetting
+  if(hasOrders){
+    try{await saveDailyXlsx();}catch(e){console.warn("xlsx save failed at midnight:",e);}
+    await checkAndCombineMonthly();
+  }
+  try{localStorage.setItem("tp_summary_date",new Date().toISOString());localStorage.removeItem("tp_checks");}catch(e){}
+  if(hasOrders&&ws&&ws.readyState===1)ws.send(JSON.stringify({type:"reset_day"}));
+}
+
+
+
+// ── Report helpers ─────────────────────────────────────────────────────────────
+async function loadReportSummaries(){
+  const el=document.getElementById("reportDailySummaries");if(!el)return;
+  try{
+    const res=await fetch('/archive-report.json',{cache:'no-store'});
+    if(!res.ok)throw new Error("Failed to load report data");
+    const data=await res.json();
+    const summaries=Array.isArray(data.dailySummaries)?data.dailySummaries:[];
+    if(!summaries.length){
+      el.innerHTML='<div class="orders-empty" style="padding:1rem 0;">No summary preview yet. After the daily refresh, the summary will be saved directly into an Excel report.</div>';
+      return;
+    }
+    el.innerHTML=`<table class="sum-table"><thead><tr>
+      <th>Date</th><th>Archived</th><th>Completed</th><th>Pending</th>
+      <th>Medical</th><th>Vaccine</th><th>Emergency</th><th>Replenishment</th>
+      <th>Scheduled</th><th>Avg mins</th>
+    </tr></thead><tbody>
+      ${summaries.slice().reverse().map(s=>`<tr>
+        <td><strong>${esc(s.date||"")}</strong></td>
+        <td>${esc(s.archivedCount??0)}</td>
+        <td>${esc(s.completedCount??0)}</td>
+        <td>${esc(s.pendingCount??0)}</td>
+        <td>${esc(s.medicalCount??0)}</td>
+        <td>${esc(s.vaccineCount??0)}</td>
+        <td>${esc(s.emergencyCount??0)}</td>
+        <td>${esc(s.replenishmentCount??0)}</td>
+        <td>${esc(s.scheduledCount??0)}</td>
+        <td>${esc(s.avgCompletionMins??"—")}</td>
+      </tr>`).join("")}
+    </tbody></table>`;
+  }catch(e){
+    el.innerHTML='<div class="orders-empty" style="padding:1rem 0;">Could not load daily summaries.</div>';
+  }
+}
+
+async function testReportSettings(){
+  try{
+    showBanner("🧪 Testing report settings...");
+    const res=await fetch('/report-test',{method:'POST'});
+    const d=await res.json();
+    if(d.ok){
+      const m=await fetch('/combine-monthly?test=1',{method:'POST'}).then(r=>r.json()).catch(()=>null);
+      showBanner("✅ Report settings work. Test daily file: "+d.file+(m&&m.ok?" · Monthly test: "+m.file:""));
+      await loadXlsxList();
+      await loadReportSummaries();
+    }else{
+      alert("Report test failed: "+(d.error||"Unknown error"));
+    }
+  }catch(e){
+    alert("Report test failed: "+e.message);
+  }
+}
+
+async function autoExportSummaryAfter24h(){
+  try{
+    const last=localStorage.getItem("tp_last_auto_report");
+    const nowMs=Date.now();
+    if(last && nowMs-Number(last)<24*60*60*1000)return;
+    localStorage.setItem("tp_last_auto_report",String(nowMs));
+    const res=await fetch('/save-daily-xlsx',{method:'POST'});
+    const d=await res.json();
+    if(d.ok){
+      showBanner("📊 24-hour summary refreshed and Excel report saved: "+d.file);
+      await maybeCreateMonthlyReport();
+      loadXlsxList();
+      loadReportSummaries();
+    }
+  }catch(e){console.warn("Auto report save failed:",e.message);}
+}
+
+async function maybeCreateMonthlyReport(){
+  const n=new Date();
+  // On the 1st day, the previous month is complete, so combine it into one reference file.
+  if(n.getDate()!==1)return;
+  try{
+    const res=await fetch('/combine-monthly',{method:'POST'});
+    const d=await res.json();
+    if(d.ok){
+      showBanner("📅 Monthly reference report created: "+d.file);
+    }
+  }catch(e){console.warn("Monthly report combine failed:",e.message);}
+}
+
+
+// ── Archive ────────────────────────────────────────────────────────────────────
+async function saveDailyXlsx(){
+  try{
+    const res=await fetch('/save-daily-xlsx',{method:'POST'});
+    const d=await res.json();
+    if(d.ok){
+      showBanner("&#x1F4BE; Saved: "+d.file);
+      await maybeCreateMonthlyReport();
+      loadXlsxList();
+      loadReportSummaries();
+    }
+    else alert("Could not save xlsx: "+d.error);
+  }catch(e){alert("Save failed: "+e.message);}
+}
+
+async function checkAndCombineMonthly(){
+  const now2=new Date();
+  const tomorrow=new Date(now2.getFullYear(),now2.getMonth(),now2.getDate()+1);
+  if(tomorrow.getDate()===1){
+    try{
+      const res=await fetch('/combine-monthly',{method:'POST'});
+      const d=await res.json();
+      if(d.ok){showBanner("&#x1F4C5; Monthly report saved: "+d.file);loadXlsxList();}
+    }catch(e){console.warn("Monthly combine failed:",e.message);}
+  }
+}
+
+async function loadXlsxList(){
+  const el=document.getElementById("xlsxList");if(!el)return;
+  try{
+    const res=await fetch('/xlsx-list');const files=await res.json();
+    if(!files.length){el.innerHTML='<div class="orders-empty" style="padding:1rem 0;">No reports yet — reports are saved automatically at midnight.</div>';return;}
+    el.innerHTML=files.map(f=>{
+      const isMonthly=f.includes("Monthly");
+      return `<div class="xlsx-file">
+        <div>
+          <div class="xlsx-file-name">${isMonthly?"&#x1F4C5;":"&#x1F4C4;"} ${esc(f)}</div>
+          <div class="xlsx-file-meta">${isMonthly?"Monthly combined report":"Daily report"}</div>
+        </div>
+        <button class="xlsx-dl-btn" onclick="window.location='/xlsx-download/${encodeURIComponent(f)}'">Download</button>
+      </div>`;
+    }).join("");
+  }catch(e){el.innerHTML='<div class="orders-empty">Could not load reports.</div>';}
+}
+
+
+
+
+
+
+// ── Greeting + Weather ─────────────────────────────────────────────────────────
+function weatherLabel(code){
+  const map={
+    0:["☀️","Clear sky"],1:["🌤️","Mainly clear"],2:["⛅","Partly cloudy"],3:["☁️","Cloudy"],
+    45:["🌫️","Foggy"],48:["🌫️","Rime fog"],
+    51:["🌦️","Light drizzle"],53:["🌦️","Drizzle"],55:["🌧️","Heavy drizzle"],
+    61:["🌧️","Light rain"],63:["🌧️","Rain"],65:["🌧️","Heavy rain"],
+    71:["🌨️","Light snow"],73:["🌨️","Snow"],75:["❄️","Heavy snow"],
+    80:["🌦️","Rain showers"],81:["🌧️","Showers"],82:["⛈️","Heavy showers"],
+    95:["⛈️","Thunderstorm"],96:["⛈️","Thunderstorm"],99:["⛈️","Severe storm"]
+  };
+  return map[code]||["🌡️","Weather"];
+}
+
+function greetingByTime(){
+  const h=new Date().getHours();
+  if(h<12)return "Good morning";
+  if(h<17)return "Good afternoon";
+  return "Good evening";
+}
+
+function dayMood(){
+  const d=new Date();
+  const day=d.toLocaleDateString(undefined,{weekday:"long"});
+  if(day==="Monday")return "Fresh week, fresh focus.";
+  if(day==="Friday")return "Finish strong today.";
+  if(day==="Saturday"||day==="Sunday")return "Weekend mode, keep it smooth.";
+  return "Hope your day is going well.";
+}
+
+async function updateGreeting(){
+  const main=document.getElementById("greetingMain");
+  const sub=document.getElementById("greetingSub");
+  const weather=document.getElementById("greetingWeather");
+  if(!main||!sub||!weather)return;
+
+  const today=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+  const roleTxt=myRole==="receiver"?"ready to action orders":"ready to manage orders";
+  main.textContent=`${greetingByTime()}, ${myName||"there"} 👋`;
+  sub.textContent=`It’s ${today}. ${dayMood()} You are ${roleTxt}.`;
+  weather.innerHTML=`🌤️ Checking weather <button class="greeting-refresh" onclick="updateGreeting()" title="Refresh weather">↻</button>`;
+
+  const fallback=()=>{
+    weather.innerHTML=`📅 ${today} <button class="greeting-refresh" onclick="updateGreeting()" title="Refresh">↻</button>`;
+  };
+
+  if(!navigator.geolocation){
+    fallback();
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    try{
+      const lat=pos.coords.latitude;
+      const lon=pos.coords.longitude;
+      const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,weather_code&timezone=auto`;
+      const res=await fetch(url);
+      const data=await res.json();
+      const temp=Math.round(data.current?.temperature_2m);
+      const code=data.current?.weather_code;
+      const [icon,label]=weatherLabel(code);
+      weather.innerHTML=`${icon} ${label} · ${temp}°C <button class="greeting-refresh" onclick="updateGreeting()" title="Refresh weather">↻</button>`;
+      sub.textContent=`It’s ${today}. ${dayMood()} Weather near you: ${label.toLowerCase()}, ${temp}°C.`;
+    }catch(e){
+      fallback();
+    }
+  },()=>{
+    fallback();
+  },{timeout:6000,maximumAge:15*60*1000});
+}
+
+// ── Admin dashboard ───────────────────────────────────────────────────────────
+async function loadAdminDashboard(){
+  const stats=document.getElementById("adminStats");
+  const users=document.getElementById("adminUsers");
+  const actions=document.getElementById("adminActionLog");
+  const sums=document.getElementById("adminSummaries");
+  try{
+    const res=await fetch('/admin-state',{cache:'no-store'});
+    const data=await res.json();
+    const active=data.activeOrders||[];
+    const done=active.filter(o=>o.done).length;
+    const pending=active.length-done;
+    const online=data.onlineMembers||[];
+    if(stats)stats.innerHTML=`
+      <div class="admin-box"><div class="admin-num">${active.length}</div><div class="admin-lbl">Active orders</div></div>
+      <div class="admin-box"><div class="admin-num">${done}</div><div class="admin-lbl">Completed</div></div>
+      <div class="admin-box"><div class="admin-num">${pending}</div><div class="admin-lbl">Pending</div></div>
+      <div class="admin-box"><div class="admin-num">${online.length}</div><div class="admin-lbl">Online users</div></div>`;
+    if(users)users.innerHTML=online.length?online.map(u=>{
+      const enc=encodeURIComponent(u.name||"");
+      return `<div class="admin-user-row">
+        <div class="admin-user-main">
+          <span class="peer-chip ${esc(u.status||"online")}" style="margin:0;"><span class="pc-dot"></span>${esc(u.status||"online")}</span>
+          <div><div class="admin-user-name">${esc(u.name)}</div><div class="admin-user-meta">${esc(u.role||"")} ${u.soundMuted?"· sound muted":"· sound on"}${u.joinedTime?" · joined "+esc(u.joinedTime):""}</div></div>
+        </div>
+        <div class="admin-actions">
+          <button class="btn btn-outline btn-sm" onclick="adminMuteUser(decodeURIComponent('${enc}'),${u.soundMuted?false:true})">${u.soundMuted?"Unmute sound":"Mute sound"}</button>
+          <button class="btn btn-coral btn-sm" onclick="adminRemoveUser(decodeURIComponent('${enc}'))">Remove</button>
+        </div>
+      </div>`;
+    }).join(""):'<div class="orders-empty" style="padding:1rem 0;">No online users</div>';
+    if(actions){
+      const ev=data.adminEvents||[];
+      actions.innerHTML=ev.length?`<div class="admin-action-log">${ev.map(a=>`<div class="admin-action-item"><div><div class="admin-action-text">${esc(a.name||"")} ${esc(a.action||"")}</div><div style="color:var(--text-3);">${esc(a.detail||"")}</div></div><div class="admin-action-time">${esc(a.time||fmtDateTime(a.timestamp)||"")}</div></div>`).join("")}</div>`:'<div class="orders-empty" style="padding:1rem 0;">No actions yet</div>';
+    }
+    const ds=data.dailySummaries||[];
+    if(sums)sums.innerHTML=ds.length?`<table class="sum-table"><thead><tr><th>Date</th><th>Archived</th><th>Completed</th><th>Pending</th><th>Avg mins</th></tr></thead><tbody>${ds.slice().reverse().slice(0,10).map(r=>`<tr><td><strong>${esc(r.date||"")}</strong></td><td>${esc(r.archivedCount||0)}</td><td>${esc(r.completedCount||0)}</td><td>${esc(r.pendingCount||0)}</td><td>${esc(r.avgCompletionMins||"—")}</td></tr>`).join("")}</tbody></table>`:'<div class="orders-empty" style="padding:1rem 0;">No summaries yet</div>';
+  }catch(e){
+    if(stats)stats.innerHTML='<div class="orders-empty" style="padding:1rem 0;">Could not load admin data.</div>';
+    if(users)users.innerHTML='<div class="orders-empty" style="padding:1rem 0;">Could not load online users.</div>';
+  }
+}
+
+function adminRemoveUser(name){
+  if(!confirm("Remove "+name+" from the online session?"))return;
+  if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:"admin_remove_user",from:myName,target:name}));
+  setTimeout(loadAdminDashboard,300);
+}
+
+function adminMuteUser(name,muted){
+  if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:"admin_mute_user",from:myName,target:name,muted:!!muted}));
+  setTimeout(loadAdminDashboard,300);
+}
+
+
+// ── UI helpers ─────────────────────────────────────────────────────────────────
+function now(){return new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});}
+function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/\'/g,"&#39;");}
+function safeId(t){return encodeURIComponent(String(t));}
+function showBanner(html){const b=document.getElementById("notifBanner");document.getElementById("notifText").innerHTML=html;b.style.display="flex";clearTimeout(b._t);b._t=setTimeout(dismissBanner,5000);}
+function dismissBanner(){document.getElementById("notifBanner").style.display="none";}
+function setConn(ok){document.getElementById("connDot").className="conn-dot"+(ok?" ok":"");document.getElementById("connLbl").textContent=ok?"Connected":"Reconnecting...";}
+function pushNotif(text){if(!("Notification"in window))return;if(Notification.permission==="granted")new Notification("Team Ping",{body:text});else if(Notification.permission!=="denied")Notification.requestPermission().then(p=>{if(p==="granted")new Notification("Team Ping",{body:text});});}
+
+
+// ── Sender reviewed popup ──────────────────────────────────────────────────────
+function showReviewPopup(order,reviewedBy){
+  const modal=document.getElementById("reviewPopup");
+  if(!modal)return;
+  document.getElementById("reviewPopupBody").textContent=(reviewedBy||"Receiver")+" has reviewed your order and accepted it for work.";
+  document.getElementById("reviewPopupCard").innerHTML=`
+    <strong>Order ID:</strong> ${esc(order.orderID||"")}<br>
+    <strong>Nest:</strong> ${esc(order.nest||"")}<br>
+    <strong>Priority:</strong> ${esc(order.priority||"")}<br>
+    <strong>Type:</strong> ${esc(order.type||"")}`;
+  modal.style.display="flex";
+  playSound("chime");
+  pushNotif("Order reviewed: "+(order.orderID||""));
+}
+
+function dismissReviewPopup(){
+  const modal=document.getElementById("reviewPopup");
+  if(modal)modal.style.display="none";
+}
+
+// ── Accept / decline order modal ──────────────────────────────────────────────
+let pendingAcceptId = null;
+
+function showAcceptModal(task){
+  pendingAcceptId = task.id;
+  document.getElementById("acceptOrderId").textContent = "Order ID: " + task.orderID;
+  document.getElementById("acceptFrom").textContent = task.from;
+  document.getElementById("acceptNest").textContent = task.nest;
+  document.getElementById("acceptBadges").innerHTML =
+    `<span class="badge ${esc(task.priority)}">${esc(task.priority)}</span>
+     <span class="badge ${esc(task.type)}">${esc(task.type)}</span>`;
+  document.getElementById("acceptModal").style.display = "flex";
+  playSound("chime");
+}
+
+function acceptOrder(){
+  document.getElementById("acceptModal").style.display = "none";
+  if(!pendingAcceptId) return;
+  // Mark as accepted on server
+  if(ws && ws.readyState===1)
+    ws.send(JSON.stringify({type:"task_accept", taskId:pendingAcceptId, by:myName}));
+  // Enable the Mark Done button
+  const tb = document.getElementById("tb-"+pendingAcceptId);
+  if(tb){
+    tb.innerHTML = `<button class="mark-done-btn" onclick="completeTask('${pendingAcceptId}')">&#x2713; Mark Done</button>`;
+  }
+  const el = document.getElementById("task-"+pendingAcceptId);
+  if(el){
+    // Add "working on it" badge
+    const existing = el.querySelector(".working-badge");
+    if(!existing){
+      const badge = document.createElement("div");
+      badge.className = "working-badge";
+      badge.style.cssText = "font-size:12px;font-weight:700;color:var(--amber-t);background:var(--amber-bg);border:1px solid var(--amber);border-radius:20px;padding:3px 10px;display:inline-block;margin-top:6px;";
+      badge.textContent = "⏳ Being worked on by " + myName;
+      el.querySelector(".order-footer").before(badge);
+    }
+  }
+  addFeed("tl", "You accepted order " + (tasks[pendingAcceptId]?.orderID||""));
+  showBanner("✓ Order accepted — you are now working on it");
+  if(tasks[pendingAcceptId]) tasks[pendingAcceptId].accepted = true;
+  rerenderTasks();
+  pendingAcceptId = null;
+}
+
+function declineOrder(){
+  document.getElementById("acceptModal").style.display = "none";
+  pendingAcceptId = null;
+}
+
+// ── Comment alert modal ────────────────────────────────────────────────────────
+let pendingCommentTaskId = null;
+
+function showCommentAlert(taskId, note, from){
+  pendingCommentTaskId = taskId;
+  document.getElementById("commentModalText").textContent = note;
+  document.getElementById("commentModalFrom").textContent = from;
+  document.getElementById("commentModal").style.display = "flex";
+  playSound("alert");
+}
+
+function acknowledgeComment(){
+  document.getElementById("commentModal").style.display = "none";
+  // Notify sender that comment was acknowledged
+  if(pendingCommentTaskId && ws && ws.readyState===1)
+    ws.send(JSON.stringify({type:"comment_ack", taskId:pendingCommentTaskId, by:myName}));
+  addFeed("mi", "You acknowledged a comment on order " + (tasks[pendingCommentTaskId]?.orderID||""));
+  pendingCommentTaskId = null;
+}
+
+
+// ── In-app Assistant Bot ───────────────────────────────────────────────────────
+const BOT_GUIDES = [
+  {
+    keys:["submit","new order","create order","order"],
+    title:"Submit an order",
+    steps:["Choose Sender mode.","Go to Main.","Use the New order flashcard.","Pick receiver, nest, priority, type, and order ID.","Tap Submit Order."],
+    tab:"main",
+    highlight:"senderOrderForm"
+  },
+  {
+    keys:["accept","work on","receiver","incoming"],
+    title:"Accept an order",
+    steps:["Choose Receiver mode.","Go to Main.","Tap an incoming order card to expand it.","Tap Accept to work on it.","When finished, tap Mark Done."],
+    tab:"main",
+    highlight:"tasksList"
+  },
+  {
+    keys:["message","chat","send message","dm"],
+    title:"Send a message",
+    steps:["Go to Main.","Scroll to Send a message.","Type your message.","Tap Send, then choose Everyone or a teammate.","The receiver must acknowledge it before it disappears."],
+    tab:"main",
+    highlight:"msgInput"
+  },
+  {
+    keys:["ping","alert","notify"],
+    title:"Ping your team",
+    steps:["Go to Main.","Select the teammates to ping.","Tap Send Ping.","They will hear the selected alert sound if they are not muted."],
+    tab:"main",
+    highlight:"pingBtn"
+  },
+  {
+    keys:["reminder","midday","time","set reminder"],
+    title:"Set the shared midday reminder",
+    steps:["Go to Settings.","Pick a reminder time.","Tap Set.","Everyone connected to the same sheet/server will receive the reminder at that time."],
+    tab:"settings",
+    highlight:"reminderTime"
+  },
+  {
+    keys:["download","report","xlsx","excel","csv","summary"],
+    title:"Download reports",
+    steps:["Go to Summary to download today's CSV.","Go to Report for Excel reports and daily summaries.","Tap Save today if you want to create today's Excel file immediately.","Use Download beside any saved report."],
+    tab:"archive",
+    highlight:"xlsxList"
+  },
+  {
+    keys:["team","teammate","cannot find","not showing","connect","online"],
+    title:"Find teammates",
+    steps:["Make sure everyone uses the same Network or ngrok URL.","Do not use localhost on teammate devices.","Ask them to enter a name and choose Sender or Receiver.","Tap Refresh team if the list does not update."],
+    tab:"main",
+    highlight:"peerBar"
+  },
+  {
+    keys:["mute","sound","volume","audio"],
+    title:"Sound and mute",
+    steps:["Go to Settings.","Choose an alert sound and volume.","Senders can mute receiver alerts from the Mute receivers section.","Receivers still see messages even if sound is muted."],
+    tab:"settings",
+    highlight:"soundSelect"
+  }
+];
+
+function toggleBot(force){
+  const panel=document.getElementById("botPanel");
+  if(!panel)return;
+  const open=typeof force==="boolean"?force:!panel.classList.contains("open");
+  panel.classList.toggle("open",open);
+  if(open&&document.getElementById("botBody").children.length===0){
+    botSay("Hi! I can help you use Team Ping. Try asking “How do I submit an order?” or tap one of the quick buttons below.");
+  }
+  if(open)setTimeout(()=>document.getElementById("botInput")?.focus(),100);
+}
+
+function botSay(text, who="bot"){
+  const body=document.getElementById("botBody");if(!body)return;
+  const div=document.createElement("div");
+  div.className="bot-msg "+who;
+  div.innerHTML=text;
+  body.appendChild(div);
+  body.scrollTop=body.scrollHeight;
+}
+
+function botAsk(q){
+  const inp=document.getElementById("botInput");
+  const text=(q||inp?.value||"").trim();
+  if(!text)return;
+  if(inp)inp.value="";
+  botSay(esc(text),"user");
+  const reply=botAnswer(text);
+  botSay(reply.html,"bot");
+  if(reply.tab||reply.highlight){
+    setTimeout(()=>botGuide(reply.tab,reply.highlight),250);
+  }
+}
+
+function botAnswer(q){
+  const query=q.toLowerCase();
+  let best=null,score=0;
+  for(const g of BOT_GUIDES){
+    const s=g.keys.reduce((n,k)=>n+(query.includes(k)?1:0),0);
+    if(s>score){score=s;best=g;}
+  }
+  if(!best){
+    return {html:"I can help with orders, accepting work, messages, pings, reminders, reports, teammates, and sound settings. Try asking: <strong>How do I accept an order?</strong>"};
+  }
+  const steps=best.steps.map((s,i)=>`<div style="margin:4px 0;"><strong>${i+1}.</strong> ${esc(s)}</div>`).join("");
+  return {html:`<strong>${esc(best.title)}</strong>${steps}<div style="margin-top:8px;color:var(--text-3);font-size:12px;">I highlighted the area for you.</div>`,tab:best.tab,highlight:best.highlight};
+}
+
+function botGuide(tab,elementId){
+  if(tab) switchTab(tab);
+  setTimeout(()=>{
+    document.querySelectorAll(".bot-highlight").forEach(el=>el.classList.remove("bot-highlight"));
+    const el=document.getElementById(elementId);
+    if(el){
+      el.scrollIntoView({behavior:"smooth",block:"center"});
+      el.classList.add("bot-highlight");
+      setTimeout(()=>el.classList.remove("bot-highlight"),3500);
+    }
+  },150);
+}
+
+// ── Auto-login ─────────────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded",()=>{
+  try{
+    const n=localStorage.getItem("tp_name");const r=localStorage.getItem("tp_role");
+    if(n&&r){shouldReconnect=true;myName=n;myRole=r;launchApp();return;}
+  }catch(e){}
+  document.getElementById("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")goToRoleSelect();});
+});
+</script>
+
+<!-- ══ IN-APP ASSISTANT BOT ══ -->
+<button class="bot-fab" id="botFab" onclick="toggleBot()" title="Help assistant">🤖</button>
+<div class="bot-panel" id="botPanel">
+  <div class="bot-head">
+    <div class="bot-avatar">🤖</div>
+    <div>
+      <div class="bot-title">Team Ping Assistant</div>
+      <div class="bot-sub">Ask me how to use this app</div>
+    </div>
+    <button class="bot-close" onclick="toggleBot(false)">×</button>
+  </div>
+  <div class="bot-body" id="botBody"></div>
+  <div class="bot-quick">
+    <button class="bot-chip" onclick="botAsk('How do I submit an order?')">Submit order</button>
+    <button class="bot-chip" onclick="botAsk('How do I accept an order?')">Accept order</button>
+    <button class="bot-chip" onclick="botAsk('How do I send a message?')">Send message</button>
+    <button class="bot-chip" onclick="botAsk('How do I set reminder?')">Set reminder</button>
+    <button class="bot-chip" onclick="botAsk('How do I download report?')">Download report</button>
+  </div>
+  <div class="bot-input-row">
+    <input class="bot-input" id="botInput" placeholder="Type a question..." onkeydown="if(event.key==='Enter')botAsk()"/>
+    <button class="bot-send" onclick="botAsk()">Send</button>
+  </div>
+</div>
+
+</body>
+</html>
