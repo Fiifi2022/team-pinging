@@ -16,7 +16,7 @@ function getLocalIP() {
 
 const PORT = process.env.PORT || 3000;
 const localIP = getLocalIP();
-const DATA_FILE = path.join(__dirname, "data.json");
+const DATA_FILE = process.env.DATA_FILE || path.join(__dirname, "data.json");
 const ARCHIVE_REPORT_FILE = path.join(__dirname, "archive-tracker.xls");
 const DEFAULT_AUDIT_COUNTS = {
   total: 0,
