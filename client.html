@@ -1120,7 +1120,8 @@ function handle(d){
     renderPeers();
   }else if(d.type==="join"){
     if(!peers[d.from])peers[d.from]={status:"online",role:d.role,selected:true};
-    renderPeers();addFeed("lv",d.from+" joined as "+(d.role||"member"));
+    renderPeers();
+    addFeed("lv",d.from+" joined as "+(d.role||"member"));
   }else if(d.type==="leave"){
     addFeed("lv",d.from+" went offline");delete peers[d.from];renderPeers();
   }else if(d.type==="status"){
@@ -1247,6 +1248,10 @@ function renderPeers(){
   }).join("");
   renderPingTargets();
   renderMuteTargets();
+  // If the order form is on the recipient step, refresh it so new receivers appear immediately
+  if(fcInited && FC_STEPS[fcStep] && FC_STEPS[fcStep].type==="recipient"){
+    renderFcStep();
+  }
 }
 
 function renderPingTargets(){
@@ -1468,7 +1473,7 @@ const FC_STEPS = [
       {val:"Vaccine",icon:"💉",desc:"Vaccines & immunisation products"}
     ]},
   { id:"orderID", q:"Enter the Order ID", hint:"Type the exact order reference",
-    type:"text", placeholder:"e.g. 6BW65U01FK"},
+    type:"text", placeholder:"e.g. VX-2024-089"},
   { id:"links", q:"Add reference links", hint:"Optional — paste URLs for this order",
     type:"links"}
 ];
@@ -1775,9 +1780,7 @@ function renderSingleTask(task){
   const doneSection=task.done
     ? `<span class="done-lbl">&#x2713; Completed by ${esc(task.doneBy||"")} at ${esc(task.doneTime||"")}</span>`
     : canWork
-      ? (isAccepted
-          ? `<button class="mark-done-btn" onclick="completeTask('${task.id}')">&#x2713; Mark Done</button>`
-          : `<button class="mark-done-btn" onclick="showAcceptModal(tasks['${task.id}'])" style="background:var(--amber);opacity:.9;">Accept to work on it</button>`)
+      ? `<button class="mark-done-btn" onclick="completeTask('${task.id}')">&#x2713; Mark Done</button>`
       : `<span class="subby-lbl">${task.accepted?("Accepted by receiver"):"Submitted by you"}</span>`;
 
   const senderActions = myRole==="sender" ? `
@@ -1787,9 +1790,7 @@ function renderSingleTask(task){
   ` : "";
 
   const receiverActions = myRole==="receiver" ? `
-    <button class="order-action-btn order-action-blue" onclick="sendAck('on-it')">&#x23F3; Send On it</button>
-    <button class="order-action-btn order-action-coral" onclick="sendAck('need-help')">&#x26A0; Need help</button>
-    ${task.done?"":`<button class="order-action-btn order-action-green" onclick="completeTask('${task.id}')">&#x2713; Complete</button>`}
+    ${task.done?"":`<button class="order-action-btn order-action-green" onclick="completeTask('${task.id}')">&#x2713; Mark Done</button>`}
   ` : "";
 
   el.innerHTML=`
@@ -1869,6 +1870,11 @@ function archiveOrderFromBoard(id){
 
 function completeTask(id){
   if(!ws||ws.readyState!==1)return;
+  // Auto-accept first if not yet accepted
+  if(tasks[id]&&!tasks[id].accepted){
+    ws.send(JSON.stringify({type:"task_accept",taskId:id,by:myName}));
+    tasks[id].accepted=true;
+  }
   const t=now();
   const doneTimestamp=Date.now();
   ws.send(JSON.stringify({type:"task_done",taskId:id,by:myName,doneTime:t,doneTimestamp}));
