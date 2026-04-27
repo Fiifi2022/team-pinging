@@ -879,6 +879,17 @@ input[type=time]{accent-color:var(--blue);}
   </div>
 </div>
 
+<!-- ══ ORDER DONE POPUP (shown to sender) ══ -->
+<div class="review-popup" id="orderDonePopup" style="display:none;">
+  <div class="review-popup-box">
+    <div class="review-popup-icon">&#x2705;</div>
+    <div class="review-popup-title" style="color:var(--green-t);">Order completed!</div>
+    <div class="review-popup-body" id="orderDoneBody"></div>
+    <div class="review-popup-card" id="orderDoneCard" style="margin-top:10px;"></div>
+    <button class="review-popup-btn" onclick="dismissOrderDonePopup()" style="background:var(--green);margin-top:16px;">Got it &#x2713;</button>
+  </div>
+</div>
+
 <!-- ══ ACCEPT ORDER MODAL ══ -->
 <div class="accept-modal" id="acceptModal" style="display:none;">
   <div class="accept-modal-box">
@@ -1187,8 +1198,12 @@ function handle(d){
   }else if(d.type==="task_done"){
     markDone(d.taskId,d.by,d.doneTime,false,d.doneTimestamp);
     if(!isMuted)playSound("blip");
-    showBanner(d.by+" completed an order!");
     addFeed("tl",d.by+" completed order "+(tasks[d.taskId]?.orderID||"")+" ("+(tasks[d.taskId]?.nest||"")+")");
+    if(myRole==="sender"&&tasks[d.taskId]&&tasks[d.taskId].from===myName){
+      showOrderDonePopup(tasks[d.taskId],d.by,d.doneTime);
+    }else{
+      showBanner(d.by+" completed an order!");
+    }
   }else if(d.type==="task_note"){
     if(tasks[d.taskId])tasks[d.taskId].notes=d.notes;
     const ta=document.getElementById("notes-"+d.taskId);
@@ -2534,6 +2549,28 @@ function showReviewPopup(order,reviewedBy){
 
 function dismissReviewPopup(){
   const modal=document.getElementById("reviewPopup");
+  if(modal)modal.style.display="none";
+}
+
+function showOrderDonePopup(order,doneBy,doneTime){
+  const mins=order.submitTimestamp&&order.doneTimestamp?Math.round((order.doneTimestamp-order.submitTimestamp)/60000):null;
+  const timeTxt=mins!==null?`<div style="margin-top:8px;font-size:13px;color:var(--green-t);background:var(--green-bg);border-radius:8px;padding:5px 10px;display:inline-block;">&#x23F1; Completed in <strong>${mins} min${mins!==1?"s":""}</strong></div>`:"";
+  const modal=document.getElementById("orderDonePopup");
+  document.getElementById("orderDoneBody").innerHTML=`<strong>${esc(doneBy)}</strong> has marked your order as done.`;
+  document.getElementById("orderDoneCard").innerHTML=`
+    <strong>Order ID:</strong> ${esc(order.orderID||"")}<br>
+    <strong>Nest:</strong> ${esc(order.nest||"")}<br>
+    <strong>Priority:</strong> ${esc(order.priority||"")}<br>
+    <strong>Type:</strong> ${esc(order.type||"")}<br>
+    <strong>Completed at:</strong> ${esc(doneTime||"")}
+    ${timeTxt}`;
+  modal.style.display="flex";
+  playSound("chime");
+  pushNotif((doneBy||"Receiver")+" completed order "+(order.orderID||"")+" ("+(order.nest||"")+")");
+}
+
+function dismissOrderDonePopup(){
+  const modal=document.getElementById("orderDonePopup");
   if(modal)modal.style.display="none";
 }
 
